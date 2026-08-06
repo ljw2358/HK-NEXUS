@@ -1,205 +1,123 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HK Holdings</title>
-    <!-- 구글 폰트 적용 (글자 깨짐 방지 및 깔끔한 렌더링) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>HK NEXUS - 글로벌 공급망</title>
     <style>
-        :root {
-            --bg-color: #121212;
-            --text-color: #ffffff;
-            --grid-color: rgba(255, 255, 255, 0.1);
-            --card-border: #ffd700; /* 노란색 테두리/포인트 */
-            --card-hover-bg: rgba(255, 215, 0, 0.15);
-            --accent-yellow: #ffd700;
-        }
-
         body {
             margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            text-align: center;
-            word-break: keep-all; /* 한글 단어 끊김 방지 */
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* 언어 선택 바 */
-        .lang-bar {
-            padding: 10px 20px;
-            background: rgba(0, 0, 0, 0.5);
-            border-bottom: 1px solid var(--grid-color);
-            text-align: right;
-        }
-
-        .lang-bar select {
-            background: var(--bg-color);
-            color: var(--text-color);
-            border: 1px solid var(--accent-yellow);
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* Hero 섹션 */
-        .hero {
-            padding: 50px 20px 30px 20px;
-        }
-
-        .hero h1 {
-            font-size: 2.5rem;
-            font-weight: 900;
+            font-family: 'Apple SD Gothic Neo', sans-serif;
+            background-color: #0d1117;
             color: #ffffff;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
         }
-
-        .hero p {
-            font-size: 1.1rem;
-            font-weight: 400;
-            opacity: 0.85;
-            margin-top: 0;
-        }
-
-        /* 2x5 그리드 레이아웃 (총 10개 핵심 분야) */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            padding: 0 40px;
-            max-width: 1000px;
-            margin: 0 auto 60px auto;
-        }
-
-        /* 노란색 테두리와 포인트를 가진 네모 스타일 */
-        .card {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 25px 15px;
-            border-radius: 12px;
-            border: 2px solid var(--accent-yellow); /* 노란색 네모 테두리 */
-            color: var(--accent-yellow); /* 글자색 노란색 강조 */
-            font-weight: 700;
-            font-size: 1.25rem;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.15);
-            transition: all 0.3s ease;
+        header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            min-height: 90px;
+            padding: 20px 40px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        /* 우측 상단 드롭다운 스타일 */
+        .language-selector select {
+            background-color: #21262d;
+            color: #ffffff;
+            border: 1px solid #30363d;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
             cursor: pointer;
         }
-
-        .card:hover {
-            transform: translateY(-5px);
-            background: var(--card-hover-bg);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.35);
-            color: #ffffff;
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
         }
-
-        /* 푸터 */
-        footer {
-            padding: 30px 20px;
-            font-size: 0.85rem;
-            opacity: 0.7;
-            border-top: 1px solid var(--grid-color);
-            line-height: 1.8;
+        .hero h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
         }
-
-        /* 모바일 대응 */
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: repeat(1, 1fr);
-                padding: 0 20px;
-            }
-            .hero h1 {
-                font-size: 1.8rem;
-            }
+        .hero p {
+            color: #8b949e;
+            font-size: 16px;
+        }
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 0 40px 60px;
+        }
+        .card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 30px;
+            width: 300px;
+        }
+        .card h3 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+        .card p {
+            color: #8b949e;
+            font-size: 14px;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
 
-    <!-- 언어 선택 바 -->
-    <div class="lang-bar">
-        <select id="langSelect" onchange="tr(this.value)">
-            <option value="ko">KO</option>
-            <option value="en">EN</option>
-            <option value="zh">ZH</option>
-            <option value="ar">AR</option>
-            <option value="ja">JA</option>
-            <option value="vi">VI</option>
-        </select>
-    </div>
+    <header>
+        <div class="logo">HK NEXUS</div>
+        <!-- 우측 언어 선택 드롭다운 창 -->
+        <div class="language-selector">
+            <select id="languageSelect" onchange="changeLanguage(this.value)">
+                <option value="ko" selected>한국어</option>
+                <option value="en">English (영어)</option>
+                <option value="zh">中文 (중국어)</option>
+                <option value="ar">العربية (아랍어)</option>
+                <option value="hi">हिन्दी (인도어/힌디어)</option>
+                <option value="es">Español (스페인어)</option>
+                <option value="pt-br">Português (브라질어)</option>
+                <option value="uk">Українська (우크라이나어)</option>
+                <option value="ja">日本語 (일본어)</option>
+                <option value="ru">Русский (러시아어)</option>
+                <option value="vi">Tiếng Việt (베트남어)</option>
+                <option value="th">ไทย (태국어)</option>
+                <option value="id">Bahasa Indonesia (인도네시아어)</option>
+                <option value="ps-pal">العربية - فلسطين (팔레스타인어)</option>
+                <option value="en-ng">English - Nigeria (나이지리아어)</option>
+            </select>
+        </div>
+    </header>
 
-    <!-- 메인 타이틀 영역 -->
-    <div class="hero">
-        <h1 id="title">HK 글로벌 미래 비전</h1>
-        <p id="sub-title">미래를 선도하는 혁신 기술과 산업</p>
-    </div>
-
-    <!-- 2x5 카드 그리드 (총 10개 핵심 분야) -->
-    <section class="grid">
-        <div class="card" id="c1">휴머노이드</div>
-        <div class="card" id="c2">인공태양</div>
-        <div class="card" id="c3">퀀텀바이오</div>
-        <div class="card" id="c4">우주산업</div>
-        <div class="card" id="c5">UAM</div>
-        <div class="card" id="c6">안경폰</div>
-        <div class="card" id="c7">파츠뱅크</div>
-        <div class="card" id="c8">방산산업</div>
-        <div class="card" id="c9">HK 월드뱅크</div>
-        <div class="card" id="c10">비전 2050</div>
+    <section class="hero">
+        <h1>HK NEXUS 글로벌 공급망</h1>
+        <p>전 세계를 연결하는 지능형 부품 소싱 및 공급 플랫폼입니다. 필요한 모든 부품을 가장 빠르고 안전하게 제공합니다.</p>
     </section>
 
-    <!-- 푸터 -->
-    <footer>
-        Hwanseon Industrial Cluster: Ulju-gun, Ulsan<br>
-        <strong>Investor Relations: info@hk-holdings.ai.kr</strong><br>
-        &copy; 2026 HK CORP. All Rights Reserved.
-    </footer>
+    <section class="features">
+        <div class="card">
+            <h3>1. 글로벌 소싱 네트워크</h3>
+            <p>전 세계 수만 개의 인증된 공급망과 인공지능이 최적의 유통까지 신속하게 찾아냅니다.</p>
+        </div>
+        <div class="card">
+            <h3>2. AI 재고 최적화</h3>
+            <p>인공지능 기반 수요 예측으로 불필요한 부품을 항상 최적의 수량으로 보유합니다.</p>
+        </div>
+        <div class="card">
+            <h3>3. 초고속 익스프레스 배송</h3>
+            <p>글로벌 물류 거점을 활용하여 주요 도시로 24시간 이내 배송을 목표로 합니다.</p>
+        </div>
+    </section>
 
-    <!-- 다국어 지원 스크립트 -->
     <script>
-        const db = {
-            'ko': ["휴머노이드", "인공태양", "퀀텀바이오", "우주산업", "UAM", "안경폰", "파츠뱅크", "방산산업", "HK 월드뱅크", "비전 2050"],
-            'en': ["Humanoid", "Artificial Sun", "Quantum Bio", "Space Industry", "UAM", "Glasses Phone", "PartsBank", "Defense Industry", "HK WorldBank", "Vision 2050"],
-            'zh': ["人形机器人", "人造太阳", "量子生物", "航天工业", "UAM", "眼镜手机", "PartsBank", "国防工业", "HK 世界银行", "2050愿景"],
-            'ar': ["الروبوتات البشرية", "الشمس الاصطناعية", "البيولوجيا الكمومية", "صناعة الفضاء", "UAM", "هاتف النظارات", "PartsBank", "صناعة الدفاع", "HK WorldBank", "رؤية 2050"],
-            'ja': ["ヒューマノイド", "人工太陽", "量子バイオ", "宇宙産業", "UAM", "メガネ型 phone", "パーツバンク", "防衛産業", "HK ワールドバンク", "ビジョン 2050"],
-            'vi': ["Robot hình người", "Mặt trời nhân tạo", "Sinh học lượng tử", "Ngành vũ trụ", "UAM", "Điện thoại kính", "PartsBank", "Công nghiệp quốc phòng", "HK WorldBank", "Tầm nhìn 2050"]
-        };
-
-        const titles = {
-            'ko': { title: "HK 글로벌 미래 비전", sub: "미래를 선도하는 혁신 기술과 산업" },
-            'en': { title: "HK Global Future Vision", sub: "Innovative Technologies & Industries Leading the Future" },
-            'zh': { title: "HK 全球未来愿景", sub: "引领未来的创新技术与产业" },
-            'ar': { title: "HK الرؤية المستقبلية العالمية", sub: "التقنيات والصناعات المبتكرة التي تقود المستقبل" },
-            'ja': { title: "HK グローバル未来ビジョン", sub: "未来をリードする革新技術と産業" },
-            'vi': { title: "HK Tầm Nhìn Tương Lai Toàn Cầu", sub: "Công nghệ và ngành công nghiệp tiên phong" }
-        };
-
-        function tr(v) {
-            const data = db[v] || db['ko'];
-            const t = titles[v] || titles['ko'];
-            
-            document.getElementById('title').innerText = t.title;
-            document.getElementById('sub-title').innerText = t.sub;
-
-            for (let i = 0; i < 10; i++) {
-                const card = document.getElementById('c' + (i + 1));
-                if (card) {
-                    card.innerText = data[i];
-                }
-            }
+        function changeLanguage(lang) {
+            console.log("Selected language: " + lang);
         }
     </script>
+
 </body>
 </html>
