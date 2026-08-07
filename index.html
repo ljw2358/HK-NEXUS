@@ -1,125 +1,781 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HK-Nexus - 안경폰 스마트 글래스</title>
+    <title>HK-NEXUS | Next-Gen Smart Glasses Phone OS</title>
+    <!-- React & ReactDOM CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel Compiler -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Noto+Sans+KR:wght@300;400;600;700&display=swap');
+        
         body {
-            margin: 0;
-            font-family: 'Apple SD Gothic Neo', sans-serif;
-            background-color: #0d1117;
-            color: #ffffff;
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #030712;
+            color: #f9fafb;
+            overflow-x: hidden;
         }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 40px;
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        
+        /* Glassmorphism Design */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
         }
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #d2a8ff;
+        .glass-panel-active {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
         }
-        .language-selector select {
-            background-color: #21262d;
-            color: #ffffff;
-            border: 1px solid #30363d;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
+        
+        /* Holographic Glows */
+        .neon-glow-cyan {
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.8), 0 0 20px rgba(6, 182, 212, 0.4);
         }
-        .hero {
-            text-align: center;
-            padding: 60px 20px;
+        .neon-border-cyan {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
         }
-        .hero h1 {
-            font-size: 38px;
-            margin-bottom: 10px;
-            color: #ffffff;
+        
+        /* AR HUD Animation */
+        @keyframes reticle-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        .hero p {
-            color: #8b949e;
-            font-size: 18px;
+        .animate-hud-spin {
+            animation: reticle-spin 20s linear infinite;
         }
-        .features {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 0 40px 60px;
-            flex-wrap: wrap;
-        }
-        .card {
-            background-color: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 12px;
-            padding: 30px;
-            width: 300px;
-        }
-        .card h3 {
-            margin-top: 0;
-            font-size: 20px;
-            color: #58a6ff;
-        }
-        .card p {
-            color: #8b949e;
-            font-size: 14px;
-            line-height: 1.5;
-        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
     </style>
 </head>
-<body>
+<body class="bg-gray-950 text-gray-100 antialiased selection:bg-cyan-500 selection:text-black">
 
-    <header>
-        <div class="logo">HK-NEXUS</div>
-        <div class="language-selector">
-            <select id="languageSelect" onchange="changeLanguage(this.value)">
-                <option value="ko" selected>한국어</option>
-                <option value="en">English (영어)</option>
-                <option value="zh">中文 (중국어)</option>
-                <option value="ar">العربية (아랍어)</option>
-                <option value="hi">हिन्दी (인도어)</option>
-                <option value="es">Español (스페인어)</option>
-                <option value="pt-br">Português (브라질어)</option>
-                <option value="uk">Українська (우크라이나어)</option>
-                <option value="ja">日本語 (일본어)</option>
-                <option value="ru">Русский (러시아어)</option>
-                <option value="vi">Tiếng Việt (베트남어)</option>
-                <option value="th">ไทย (태국어)</option>
-                <option value="id">Bahasa Indonesia (인도네시아어)</option>
-                <option value="ps-pal">العربية - فلسطين (팔레스타인어)</option>
-                <option value="en-ng">English - Nigeria (나이지리아어)</option>
-            </select>
-        </div>
-    </header>
+    <div id="root"></div>
 
-    <section class="hero">
-        <h1>HK-NEXUS 안경폰 스마트 글래스</h1>
-        <p>세상을 보는 새로운 연결, 손안의 스마트폰을 넘어 눈앞으로 펼쳐지는 차세대 웨어러블 디바이스입니다.</p>
-    </section>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-    <section class="features">
-        <div class="card">
-            <h3>1. 스마트 비전 인터페이스</h3>
-            <p>실시간 홀로그램 디스플레이와 AI 비서 기능을 통해 언제 어디서나 필요한 정보를 시각적으로 확인합니다.</p>
-        </div>
-        <div class="card">
-            <h3>2. 초고속 글로벌 통신</h3>
-            <p>차세대 네트워크를 기반으로 지연 없는 데이터 통신과 원활한 글로벌 멀티미디어를 지원합니다.</p>
-        </div>
-        <div class="card">
-            <h3>3. 웨어러블 에코시스템</h3>
-            <p>가볍고 인체공학적인 디자인에 강력한 배터리 효율을 더해 일상 속 완벽한 스마트 라이프를 완성합니다.</p>
-        </div>
-    </section>
+        // --- 16 LANGUAGES TRANSLATION MATRIX ---
+        const I18N_DATA = {
+            en: {
+                appName: "HK-NEXUS OS",
+                tagline: "超越 S&A: Next-Gen Glasses Phone Interface",
+                statusOnline: "AR HUD CONNECTED",
+                navHud: "AR HUD Display",
+                navWallet: "HAE-EX Web3 Wallet",
+                navCity: "8M Mega-City IoT",
+                navSpecs: "Hardware Specs",
+                arSimTitle: "Binocular Optical Waveguide HUD Live Feed",
+                arFocus: "Retinal Projection Active",
+                arBattery: "Quantum Battery: 99.8%",
+                arMode: "Vision Protocol: Spatial AR",
+                walletBalance: "H-CBDC Balance",
+                stoEquity: "HG-TOWER STO Shares",
+                robotStatus: "1-Home-1-Robot Care Matrix",
+                robotOnline: "ROBOT ACTIVE - Home Security & Assist",
+                uamStatus: "UAM Autonomous Shuttle Call",
+                uamETA: "Estimated Arrival: 3 Mins",
+                specsHeader: "Smart Glasses Phone Hardware Dominance",
+                specDisplay: "Dual 4K Micro-OLED Retinal Projection (10,000 Nits)",
+                specChip: "PHK Quantum-Neural Processor v9",
+                specBattery: "Nuclear-Fusion Solid-State Battery (72hr Continuous)",
+                specComms: "6G Terahertz Direct Satellite Link",
+                githubTag: "GitHub Deployment Ready v1.0.0"
+            },
+            ko: {
+                appName: "HK-NEXUS OS",
+                tagline: "삼성·애플 압도: 차세대 안경폰 통합 인터페이스",
+                statusOnline: "AR HUD 연동 완료",
+                navHud: "AR HUD 디스플레이",
+                navWallet: "해오름 Web3 금융지갑",
+                navCity: "800만 메가시티 IoT",
+                navSpecs: "안경폰 하드웨어 스펙",
+                arSimTitle: "양안식 광파동관 HUD 실시간 프로젝션",
+                arFocus: "망막 투사 오버레이 작동 중",
+                arBattery: "양자 배터리 잔량: 99.8%",
+                arMode: "비전 프로토콜: 공간 증강현실",
+                walletBalance: "해오름 H-CBDC 보유액",
+                stoEquity: "경주 165층 HG-TOWER STO 지분",
+                robotStatus: "1가정 1로봇 케어 시스템",
+                robotOnline: "로봇 가동 중 - 경비 및 수직 가사 지원",
+                uamStatus: "UAM 무인 도심항공교통 호출",
+                uamETA: "도착 예정 시간: 3분 (165층 버티포트)",
+                specsHeader: "HK-NEXUS 스마트 안경폰 압도적 하드웨어",
+                specDisplay: "듀얼 4K 마이크로 OLED 망막 투사 (10,000 Nits)",
+                specChip: "PHK 퀀텀-뉴럴 프로세서 v9",
+                specBattery: "초소형 핵융합 고체 배터리 (72시간 연속 사용)",
+                specComms: "6G 테라헤르츠 위성 직접 통신",
+                githubTag: "GitHub 오픈소스 푸시 완료 v1.0.0"
+            },
+            zh: {
+                appName: "HK-NEXUS OS",
+                tagline: "超越三星与苹果：下一代智能眼镜手机",
+                statusOnline: "AR HUD 已连接",
+                navHud: "AR HUD 显示屏",
+                navWallet: "HAE-EX Web3 钱包",
+                navCity: "800万 Mega-City IoT",
+                navSpecs: "硬件规格",
+                arSimTitle: "双目光波导 HUD 实时投影",
+                arFocus: "视网膜投影激活",
+                arBattery: "量子电池: 99.8%",
+                arMode: "视觉协议: 空间 AR",
+                walletBalance: "H-CBDC 余额",
+                stoEquity: "HG-TOWER STO 股份",
+                robotStatus: "一户一机器人护理系统",
+                robotOnline: "机器人运行中 - 家庭安防与 Core 助手",
+                uamStatus: "UAM 空中出租车呼叫",
+                uamETA: "预计到达时间: 3分钟",
+                specsHeader: "智能眼镜手机硬件优势",
+                specDisplay: "双 4K Micro-OLED 视网膜投影 (10,000 Nits)",
+                specChip: "PHK 量子-神经处理器 v9",
+                specBattery: "微型核聚变固态电池 (72小时)",
+                specComms: "6G 太赫兹卫星直连",
+                githubTag: "GitHub 部署就绪 v1.0.0"
+            },
+            ar: {
+                appName: "HK-NEXUS OS",
+                tagline: "تجاوز سامسونج وآبل: واجهة هاتف النظارات الذكية",
+                statusOnline: "AR HUD متصل",
+                navHud: "شاشة AR HUD",
+                navWallet: "محفظة HAE-EX Web3",
+                navCity: "إنترنت الأشياء للمدينة 8M",
+                navSpecs: "مواصفات الأجهزة",
+                arSimTitle: "بث مباشر لأسقاط شبكية العين HUD",
+                arFocus: "الإسقاط الشبكي نشط",
+                arBattery: "بطارية الكوانتوم: 99.8%",
+                arMode: "بروتوكول الرؤية: AR المكاني",
+                walletBalance: "رصيد H-CBDC",
+                stoEquity: "أسهم HG-TOWER STO",
+                robotStatus: "نظام الرعاية روبوت لكل منزل",
+                robotOnline: "الروبوت نشط - أمن المنزل والخدمة",
+                uamStatus: "استدعاء UAM التاكسي الجوي",
+                uamETA: "الوصول المتوقع: 3 دقائق",
+                specsHeader: "تفوق أجهزة هاتف النظارات الذكية",
+                specDisplay: "عرض شبكي Dual 4K Micro-OLED",
+                specChip: "معالج PHK الكمي العصبي v9",
+                specBattery: "بطارية الاندماج النووي (72 ساعة)",
+                specComms: "اتصال مباشر بالأقمار الصناعية 6G",
+                githubTag: "جاهز للنشر على GitHub v1.0.0"
+            },
+            hi: {
+                appName: "HK-NEXUS OS",
+                tagline: "सैमसंग और एप्पल से आगे: अगली पीढ़ी का ग्लास फोन",
+                statusOnline: "AR HUD कनेक्टेड",
+                navHud: "AR HUD डिस्प्ले",
+                navWallet: "HAE-EX Web3 वॉलेट",
+                navCity: "8M मेगा-सिटी IoT",
+                navSpecs: "हार्डवेयर स्पेसिफिकेशन",
+                arSimTitle: "बाइनोक्युलर ऑप्टिकल वेवगाइड HUD लाइव",
+                arFocus: "रेटिनल प्रोजेक्शन सक्रिय",
+                arBattery: "क्वांटम बैटरी: 99.8%",
+                arMode: "विज़न प्रोटोकॉल: स्थानिक AR",
+                walletBalance: "H-CBDC शेष",
+                stoEquity: "HG-TOWER STO शेयर",
+                robotStatus: "1-घर-1-रोबोट केयर मैट्रिक्स",
+                robotOnline: "रोबोट सक्रिय - होम सुरक्षा",
+                uamStatus: "UAM एयर टैक्सी कॉल",
+                uamETA: "अनुमानित आगमन: 3 मिनट",
+                specsHeader: "स्मार्ट ग्लासेस फोन हार्डवेयर",
+                specDisplay: "डुअल 4K माइक्रो-OLED रेटिनल प्रोजेक्शन",
+                specChip: "PHK क्वांटम-न्यूरल प्रोसेसर v9",
+                specBattery: "परमाणु संलयन सॉलिड-स्टेट बैटरी (72 घंटे)",
+                specComms: "6G टेराहर्ट्ज़ सैटेलाइट लिंक",
+                githubTag: "GitHub रेडी v1.0.0"
+            },
+            es: {
+                appName: "HK-NEXUS OS",
+                tagline: "Más allá de S&A: Teléfono de Gafas Inteligentes",
+                statusOnline: "AR HUD CONECTADO",
+                navHud: "Pantalla AR HUD",
+                navWallet: "Billetera HAE-EX Web3",
+                navCity: "IoT Mega-Ciudad 8M",
+                navSpecs: "Especificaciones",
+                arSimTitle: "Transmisión en vivo HUD de guía de onda óptica",
+                arFocus: "Proyección retinal activa",
+                arBattery: "Batería Cuántica: 99.8%",
+                arMode: "Protocolo de Visión: AR Espacial",
+                walletBalance: "Saldo H-CBDC",
+                stoEquity: "Acciones HG-TOWER STO",
+                robotStatus: "Matriz de cuidado 1 Robot por Hogar",
+                robotOnline: "ROBOT ACTIVO - Seguridad",
+                uamStatus: "Llamada UAM Taxi Aéreo",
+                uamETA: "Llegada estimada: 3 Min",
+                specsHeader: "Dominio de Hardware de Gafas Inteligentes",
+                specDisplay: "Proyección retinal Dual 4K Micro-OLED",
+                specChip: "Procesador PHK Quantum-Neural v9",
+                specBattery: "Batería de Fusión Nuclear (72 horas)",
+                specComms: "Enlace Satelital Directo 6G",
+                githubTag: "Despliegue en GitHub Listo v1.0.0"
+            },
+            pt: {
+                appName: "HK-NEXUS OS",
+                tagline: "Superando Samsung & Apple: Óculos Smart Phone",
+                statusOnline: "AR HUD CONECTADO",
+                navHud: "Display AR HUD",
+                navWallet: "Carteira HAE-EX Web3",
+                navCity: "IoT Mega-Cidade 8M",
+                navSpecs: "Especificações",
+                arSimTitle: "Transmissão HUD Waveguide Óptica",
+                arFocus: "Projeção Retiniana Ativa",
+                arBattery: "Bateria Quântica: 99.8%",
+                arMode: "Visão: AR Espacial",
+                walletBalance: "Saldo H-CBDC",
+                stoEquity: "Ações HG-TOWER STO",
+                robotStatus: "Cuidado 1 Robô por Família",
+                robotOnline: "ROBÔ ATIVO - Segurança",
+                uamStatus: "Chamar UAM Táxi Aéreo",
+                uamETA: "Chegada estimada: 3 Mins",
+                specsHeader: "Domínio de Hardware dos Óculos Smart",
+                specDisplay: "Projeção Retiniana Dual 4K Micro-OLED",
+                specChip: "Processador Quântico-Neural PHK v9",
+                specBattery: "Bateria de Fusão Nuclear (72 horas)",
+                specComms: "Conexão Satelital 6G Terahertz",
+                githubTag: "Pronto para GitHub v1.0.0"
+            },
+            uk: {
+                appName: "HK-NEXUS OS",
+                tagline: "Перевершуючи S&A: Смарт-Окуляри Телефон",
+                statusOnline: "AR HUD ПІДКЛЮЧЕНО",
+                navHud: "Дисплей AR HUD",
+                navWallet: "HAE-EX Web3 Гаманець",
+                navCity: "8М Мега-Сіті IoT",
+                navSpecs: "Характеристики",
+                arSimTitle: "Оптичний хвилевід HUD Лайв",
+                arFocus: "Сітківкова проекція активна",
+                arBattery: "Квантова батарея: 99.8%",
+                arMode: "Протокол: Просторова AR",
+                walletBalance: "Баланс H-CBDC",
+                stoEquity: "Акції HG-TOWER STO",
+                robotStatus: "Система 1 Робот на Сім'ю",
+                robotOnline: "РОБОТ АКТИВНИЙ - Безпека",
+                uamStatus: "Виклик UAM Аеротаксі",
+                uamETA: "Прибуття через: 3 хв",
+                specsHeader: "Апаратна перевага смарт-окулярів",
+                specDisplay: "Dual 4K Micro-OLED Проекція",
+                specChip: "Квантово-Нейронний Процесор PHK v9",
+                specBattery: "Ядерно-Синтезна Батарея (72 год)",
+                specComms: "Супутниковий Зв'язок 6G",
+                githubTag: "Готово до GitHub v1.0.0"
+            },
+            ja: {
+                appName: "HK-NEXUS OS",
+                tagline: "Samsung・Apple超越: 次世代メガネ型フォン",
+                statusOnline: "AR HUD 接続完了",
+                navHud: "AR HUD ディスプレイ",
+                navWallet: "HAE-EX Web3 ウォレット",
+                navCity: "800万メガシティ IoT",
+                navSpecs: "ハードウェアスペック",
+                arSimTitle: "双眼光学導波路 HUD リアルタイム投影",
+                arFocus: "網膜投影アクティブ",
+                arBattery: "量子バッテリー: 99.8%",
+                arMode: "ビジョンプロトコル: 空間AR",
+                walletBalance: "H-CBDC 保有高",
+                stoEquity: "HG-TOWER STO 株式",
+                robotStatus: "1世帯1ロボット ケアシステム",
+                robotOnline: "ロボット稼働中 - ホームセキュリティ",
+                uamStatus: "UAM エアタクシー呼び出し",
+                uamETA: "到着予定時間: 3分",
+                specsHeader: "スマートメガネフォン ハードウェア",
+                specDisplay: "Dual 4K Micro-OLED 網膜投影 (10,000 Nits)",
+                specChip: "PHK クォンタム・ニューラルプロセッサ v9",
+                specBattery: "小型核融合固体重合電池 (72時間)",
+                specComms: "6G テラヘルツ 衛星直接通信",
+                githubTag: "GitHub Ready v1.0.0"
+            },
+            ru: {
+                appName: "HK-NEXUS OS",
+                tagline: "Превосходя Samsung и Apple: Смарт-Очки Телефон",
+                statusOnline: "AR HUD ПОДКЛЮЧЕН",
+                navHud: "Дисплей AR HUD",
+                navWallet: "HAE-EX Web3 Кошелек",
+                navCity: "8М Мега-Сити IoT",
+                navSpecs: "Характеристики",
+                arSimTitle: "Оптический волновод HUD Прямой эфир",
+                arFocus: "Проекция на сетчатку активна",
+                arBattery: "Квантовая батарея: 99.8%",
+                arMode: "Режим: Пространственная AR",
+                walletBalance: "Баланс H-CBDC",
+                stoEquity: "Акции HG-TOWER STO",
+                robotStatus: "Система 1 Робот на Семью",
+                robotOnline: "РОБОТ АКТИВЕН - Охрана",
+                uamStatus: "Вызов UAM Аэротакси",
+                uamETA: "Ожидание: 3 мин",
+                specsHeader: "Аппаратное превосходство смарт-очков",
+                specDisplay: "Проекция Dual 4K Micro-OLED",
+                specChip: "Квантово-Нейронный Процессор PHK v9",
+                specBattery: "Термоядерная батарея (72 часа)",
+                specComms: "Спутниковая связь 6G Terahertz",
+                githubTag: "Готово к GitHub v1.0.0"
+            },
+            vi: {
+                appName: "HK-NEXUS OS",
+                tagline: "Vượt xa Samsung & Apple: Điện thoại Kính Thông minh",
+                statusOnline: "ĐÃ KẾT NỐI AR HUD",
+                navHud: "Màn hình AR HUD",
+                navWallet: "Ví HAE-EX Web3",
+                navCity: "IoT Siêu đô thị 8 triệu dân",
+                navSpecs: "Thông số phần cứng",
+                arSimTitle: "HUD Ống dẫn sóng quang học Trực tiếp",
+                arFocus: "Chiếu võng mạc đang hoạt động",
+                arBattery: "Pin Lượng tử: 99.8%",
+                arMode: "Giao thức: AR Không gian",
+                walletBalance: "Số dư H-CBDC",
+                stoEquity: "Cổ phần HG-TOWER STO",
+                robotStatus: "Hệ thống 1 Robot cho 1 Gia đình",
+                robotOnline: "ROBOT ĐANG HOẠT ĐỘNG - An ninh",
+                uamStatus: "Gọi UAM Taxi Bầu trời",
+                uamETA: "Dự kiến đến: 3 phút",
+                specsHeader: "Thống trị Phần cứng Kính Thông minh",
+                specDisplay: "Chiếu võng mạc Dual 4K Micro-OLED",
+                specChip: "Bộ xử lý Lượng tử Neural PHK v9",
+                specBattery: "Pin Nhiệt hạch Rắn (72 giờ)",
+                specComms: "Kết nối Vệ tinh Trực tiếp 6G",
+                githubTag: "Sẵn sàng cho GitHub v1.0.0"
+            },
+            th: {
+                appName: "HK-NEXUS OS",
+                tagline: "เหนือกว่า Samsung & Apple: สมาร์ทกลาสโฟนแห่งอนาคต",
+                statusOnline: "เชื่อมต่อ AR HUD แล้ว",
+                navHud: "หน้าจอ AR HUD",
+                navWallet: "กระเป๋าเงิน HAE-EX Web3",
+                navCity: "IoT เมกะซิตี้ 8 ล้านคน",
+                navSpecs: "สเปกฮาร์ดแวร์",
+                arSimTitle: "การยิงภาพเรตินา Waveguide HUD สด",
+                arFocus: "ฉายภาพเข้าเรตินาทำงานอยู่",
+                arBattery: "แบตเตอรี่ควอนตัม: 99.8%",
+                arMode: "โหมด: Spatial AR",
+                walletBalance: "ยอดเงิน H-CBDC",
+                stoEquity: "หุ้น HG-TOWER STO",
+                robotStatus: "ระบบดูแล 1 หุ่นยนต์ต่อ 1 ครัวเรือน",
+                robotOnline: "หุ่นยนต์ทำงาน - รักษาความปลอดภัย",
+                uamStatus: "เรียก UAM แท็กซี่บินได้",
+                uamETA: "คาดว่าจะถึงใน: 3 นาที",
+                specsHeader: "ความเป็นผู้นำฮาร์ดแวร์สมาร์ทกลาส",
+                specDisplay: "จอฉายเรตินา Dual 4K Micro-OLED",
+                specChip: "ชิป PHK Quantum-Neural v9",
+                specBattery: "แบตเตอรี่นิวเคลียร์ฟิวชัน (72 ชม.)",
+                specComms: "เชื่อมต่อดาวเทียม 6G โดยตรง",
+                githubTag: "พร้อมใช้งานบน GitHub v1.0.0"
+            },
+            id: {
+                appName: "HK-NEXUS OS",
+                tagline: "Melampaui S&A: Telepon Kacamata Pintar",
+                statusOnline: "AR HUD TERHUBUNG",
+                navHud: "Tampilan AR HUD",
+                navWallet: "Dompet HAE-EX Web3",
+                navCity: "IoT Mega-Kota 8M",
+                navSpecs: "Spesifikasi",
+                arSimTitle: "Siaran Langsung HUD Optical Waveguide",
+                arFocus: "Proyeksi Retina Aktif",
+                arBattery: "Baterai Kuantum: 99.8%",
+                arMode: "Protokol: Spatial AR",
+                walletBalance: "Saldo H-CBDC",
+                stoEquity: "Saham HG-TOWER STO",
+                robotStatus: "Sistem perawatan 1 Robot 1 Rumah",
+                robotOnline: "ROBOT AKTIF - Keamanan Rumah",
+                uamStatus: "Panggil UAM Taksi Udara",
+                uamETA: "Estimasi Tiba: 3 Menit",
+                specsHeader: "Dominasi Perangkat Keras Kacamata Pintar",
+                specDisplay: "Proyeksi Retina Dual 4K Micro-OLED",
+                specChip: "Prosesor Kuantum-Neural PHK v9",
+                specBattery: "Baterai Fusi Nuklir (72 jam)",
+                specComms: "Koneksi Satelit Langsung 6G",
+                githubTag: "Siap Deploy ke GitHub v1.0.0"
+            },
+            ps: {
+                appName: "HK-NEXUS OS",
+                tagline: "له سامسونګ او ایپل پورته: د ځیرکو عينکو تلیفون",
+                statusOnline: "AR HUD وصل شوی",
+                navHud: "د AR HUD سکرین",
+                navWallet: "HAE-EX Web3 والټ",
+                navCity: "8M میګا سیټي IoT",
+                navSpecs: "هارډویر مشخصات",
+                arSimTitle: "د آپټیکل ویو ګایډ HUD ژوندی پروژیکشن",
+                arFocus: "شبکی پروژیکشن فعال دی",
+                arBattery: "کوانټم بیټرۍ: 99.8%",
+                arMode: "د لید پروتوکول: Spatial AR",
+                walletBalance: "د H-CBDC پاتې balance",
+                stoEquity: "د HG-TOWER STO برخه",
+                robotStatus: "د ۱ کور ۱ روبوټ ساتنې سیسټم",
+                robotOnline: "روبوټ فعال دی - کورنی امنیت",
+                uamStatus: "د UAM هوایی ټیکسي غوښتنه",
+                uamETA: "رسېدو وخت: ۳ دقیقې",
+                specsHeader: "د ځیرکو عينکو تلیفون هارډویر",
+                specDisplay: "Dual 4K Micro-OLED شبکی پروژیکشن",
+                specChip: "PHK کوانټم-نیورال پروسیسر v9",
+                specBattery: "نیوکلیر فیوژن بیټرۍ (72 ساعته)",
+                specComms: "6G سپوږمکۍ مستقیم اړیکه",
+                githubTag: "په GitHub کې خپرولو ته چمتو v1.0.0"
+            },
+            it: {
+                appName: "HK-NEXUS OS",
+                tagline: "Oltre Samsung e Apple: Smart Glasses Phone",
+                statusOnline: "AR HUD CONNESSO",
+                navHud: "Display AR HUD",
+                navWallet: "Portafoglio HAE-EX Web3",
+                navCity: "IoT Mega-Città 8M",
+                navSpecs: "Specifiche Hardware",
+                arSimTitle: "Proiezione Retinica HUD Waveguide in Tempo Reale",
+                arFocus: "Proiezione Retinica Attiva",
+                arBattery: "Batteria Quantistica: 99.8%",
+                arMode: "Protocollo: AR Spaziale",
+                walletBalance: "Saldo H-CBDC",
+                stoEquity: "Azioni HG-TOWER STO",
+                robotStatus: "Assistenza 1 Robot per Famiglia",
+                robotOnline: "ROBOT ATTIVO - Sicurezza Casa",
+                uamStatus: "Chiamata UAM Taxi Aereo",
+                uamETA: "Arrivo Previsto: 3 Min",
+                specsHeader: "Dominio Hardware Smart Glasses Phone",
+                specDisplay: "Proiezione Retinica Dual 4K Micro-OLED",
+                specChip: "Processore Quantistico-Neurale PHK v9",
+                specBattery: "Batteria a Fusione Nucleare (72 ore)",
+                specComms: "Connessione Satellitare Diretta 6G",
+                githubTag: "Pronto per GitHub v1.0.0"
+            },
+            fr: {
+                appName: "HK-NEXUS OS",
+                tagline: "Surpasser S&A: Lunettes Smart Phone Futurs",
+                statusOnline: "AR HUD CONNECTÉ",
+                navHud: "Affichage AR HUD",
+                navWallet: "Portefeuille HAE-EX Web3",
+                navCity: "IoT Méga-Cité 8M",
+                navSpecs: "Spécifications",
+                arSimTitle: "Projection Rétinienne HUD Guide d'onde Optical",
+                arFocus: "Projection Rétinienne Active",
+                arBattery: "Batterie Quantique: 99.8%",
+                arMode: "Vision: AR Spatiale",
+                walletBalance: "Solde H-CBDC",
+                stoEquity: "Actions HG-TOWER STO",
+                robotStatus: "Système 1 Robot par Foyer",
+                robotOnline: "ROBOT ACTIF - Sécurité Domestique",
+                uamStatus: "Appel UAM Taxi Aérien",
+                uamETA: "Arrivée Estimée: 3 Min",
+                specsHeader: "Domination Matérielle des Lunettes Smart",
+                specDisplay: "Projection Rétinienne Dual 4K Micro-OLED",
+                specChip: "Processeur Quantique-Neuronal PHK v9",
+                specBattery: "Batterie à Fusion Nucléaire (72 heures)",
+                specComms: "Liaison Satellite Directe 6G",
+                githubTag: "Prêt pour GitHub v1.0.0"
+            },
+            de: {
+                appName: "HK-NEXUS OS",
+                tagline: "Über Samsung & Apple: Smart Glasses Phone",
+                statusOnline: "AR HUD VERBUNDEN",
+                navHud: "AR HUD Display",
+                navWallet: "HAE-EX Web3 Wallet",
+                navCity: "8M Mega-City IoT",
+                navSpecs: "Hardware-Spezifikationen",
+                arSimTitle: "Binokularer Lichtwellenleiter HUD Live-Feed",
+                arFocus: "Retinale Projektion Aktiv",
+                arBattery: "Quanten-Akku: 99.8%",
+                arMode: "Vision-Protokoll: Raum-AR",
+                walletBalance: "H-CBDC Guthaben",
+                stoEquity: "HG-TOWER STO Anteile",
+                robotStatus: "1-Roboter-pro-Haushalt Pflege",
+                robotOnline: "ROBOTER AKTIV - Sicherheit & Haushalt",
+                uamStatus: "UAM Flugtaxi Ruf",
+                uamETA: "Ankunft in: 3 Min",
+                specsHeader: "Hardware-Dominanz des Smart Glasses Phone",
+                specDisplay: "Dual 4K Micro-OLED Retinale Projektion",
+                specChip: "PHK Quanten-Neural-Prozessor v9",
+                specBattery: "Kernfusions-Festkörper-Akku (72 Std.)",
+                specComms: "6G Terahertz Direkte Satellitenverbindung",
+                githubTag: "GitHub-Bereit v1.0.0"
+            }
+        };
 
-    <script>
-        function changeLanguage(lang) {
-            console.log("Selected language: " + lang);
+        const LANG_NAMES = {
+            en: "English",
+            ko: "한국어",
+            zh: "中文",
+            ar: "العربية",
+            hi: "हिन्दी",
+            es: "Español",
+            pt: "Português",
+            uk: "Українська",
+            ja: "日本語",
+            ru: "Русский",
+            vi: "Tiếng Việt",
+            th: "ไทย",
+            id: "Bahasa Indonesia",
+            ps: "پښتو",
+            it: "Italiano",
+            fr: "Français",
+            de: "Deutsch"
+        };
+
+        function App() {
+            const [lang, setLang] = useState('ko');
+            const [activeTab, setActiveTab] = useState('hud');
+            const [hudTime, setHudTime] = useState(new Date().toLocaleTimeString());
+            const [robotAssist, setRobotAssist] = useState(true);
+            const [uamCalled, setUamCalled] = useState(false);
+
+            const t = I18N_DATA[lang] || I18N_DATA['en'];
+
+            useEffect(() => {
+                const timer = setInterval(() => {
+                    setHudTime(new Date().toLocaleTimeString());
+                }, 1000);
+                return () => clearInterval(timer);
+            }, []);
+
+            return (
+                <div className="min-h-screen flex flex-col justify-between p-3 md:p-8">
+                    
+                    {/* --- HEADER BAR --- */}
+                    <header className="glass-panel rounded-2xl p-4 mb-6 flex flex-wrap justify-between items-center gap-4 border-cyan-500/30">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-orbitron font-bold text-xl text-black shadow-lg shadow-cyan-500/40">
+                                HK
+                            </div>
+                            <div>
+                                <h1 className="font-orbitron font-extrabold text-2xl tracking-wider text-cyan-400 neon-glow-cyan">
+                                    {t.appName}
+                                </h1>
+                                <p className="text-xs text-gray-400 font-mono">{t.tagline}</p>
+                            </div>
+                        </div>
+
+                        {/* Status Badge */}
+                        <div className="flex items-center gap-2 bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 px-3 py-1.5 rounded-full text-xs font-mono animate-pulse">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            {t.statusOnline}
+                        </div>
+
+                        {/* 16 Languages Selector */}
+                        <div className="flex items-center gap-2 bg-gray-900/90 p-1.5 rounded-xl border border-gray-800">
+                            <i data-lucide="languages" className="w-4 h-4 text-cyan-400"></i>
+                            <select 
+                                value={lang} 
+                                onChange={(e) => setLang(e.target.value)}
+                                className="bg-transparent text-xs font-medium text-cyan-300 focus:outline-none cursor-pointer"
+                            >
+                                {Object.keys(LANG_NAMES).map((code) => (
+                                    <option key={code} value={code} className="bg-gray-900 text-white">
+                                        {LANG_NAMES[code]}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </header>
+
+                    {/* --- NAVIGATION TABS --- */}
+                    <nav className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                        {[
+                            { id: 'hud', label: t.navHud, icon: 'glasses' },
+                            { id: 'wallet', label: t.navWallet, icon: 'wallet' },
+                            { id: 'city', label: t.navCity, icon: 'building-2' },
+                            { id: 'specs', label: t.navSpecs, icon: 'cpu' }
+                        ].map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`p-3.5 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 font-mono ${
+                                    activeTab === tab.id
+                                        ? 'glass-panel-active text-cyan-400 border-cyan-400/60 neon-border-cyan'
+                                        : 'glass-panel text-gray-400 hover:text-white hover:border-gray-700'
+                                }`}
+                            >
+                                <span>{tab.label}</span>
+                            </button>
+                        ))}
+                    </nav>
+
+                    {/* --- MAIN CONTENT DISPLAY --- */}
+                    <main className="flex-1 mb-6">
+                        
+                        {/* TAB 1: AR HUD SIMULATOR */}
+                        {activeTab === 'hud' && (
+                            <div className="glass-panel rounded-3xl p-6 relative overflow-hidden border-cyan-500/30 min-h-[460px] flex flex-col justify-between">
+                                {/* HUD Background Reticle Overlay */}
+                                <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+                                    <div className="w-96 h-96 border-2 border-dashed border-cyan-400 rounded-full animate-hud-spin"></div>
+                                    <div className="w-64 h-64 border border-cyan-400 rounded-full absolute"></div>
+                                </div>
+
+                                {/* HUD Top Bar */}
+                                <div className="flex justify-between items-start z-10 font-mono text-xs text-cyan-400">
+                                    <div>
+                                        <p className="font-bold text-sm text-cyan-300">{t.arSimTitle}</p>
+                                        <p className="text-gray-400">{t.arFocus}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-lg font-orbitron text-cyan-400 font-extrabold">{hudTime}</p>
+                                        <p className="text-emerald-400">{t.arBattery}</p>
+                                    </div>
+                                </div>
+
+                                {/* HUD Center Vision Target */}
+                                <div className="my-auto text-center z-10 py-12">
+                                    <div className="inline-block p-8 rounded-full border border-cyan-500/40 bg-cyan-950/20 backdrop-blur-md relative">
+                                        <div className="w-4 h-4 bg-cyan-400 rounded-full animate-ping absolute inset-0 m-auto"></div>
+                                        <div className="font-orbitron text-2xl font-black text-white tracking-widest neon-glow-cyan mb-1">
+                                            HK-GLASSES PHONE HUD
+                                        </div>
+                                        <p className="text-xs font-mono text-cyan-300">{t.arMode}</p>
+                                    </div>
+                                </div>
+
+                                {/* HUD Bottom Telemetry */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 z-10 font-mono text-xs">
+                                    <div className="p-3 rounded-xl bg-gray-900/60 border border-cyan-900/50">
+                                        <span className="text-gray-400">Retinal Resolution:</span>
+                                        <span className="text-cyan-300 float-right font-bold">8K Ultra-Waveguide</span>
+                                    </div>
+                                    <div className="p-3 rounded-xl bg-gray-900/60 border border-cyan-900/50">
+                                        <span className="text-gray-400">Eye-Tracking FPS:</span>
+                                        <span className="text-cyan-300 float-right font-bold">240Hz Direct-Lase</span>
+                                    </div>
+                                    <div className="p-3 rounded-xl bg-gray-900/60 border border-cyan-900/50">
+                                        <span className="text-gray-400">AI Assist:</span>
+                                        <span className="text-emerald-400 float-right font-bold">ACTIVE (Neural v9)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* TAB 2: HAE-EX WEB3 WALLET */}
+                        {activeTab === 'wallet' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="glass-panel rounded-3xl p-6 border-cyan-500/30 flex flex-col justify-between">
+                                    <div>
+                                        <span className="text-xs font-mono text-cyan-400 uppercase tracking-widest">Haeoreum CBDC Ledger</span>
+                                        <h3 className="text-gray-400 text-sm mt-1">{t.walletBalance}</h3>
+                                        <div className="text-4xl font-orbitron font-extrabold text-white mt-2 neon-glow-cyan">
+                                            ₩ 1,280,000,000 <span className="text-lg font-normal text-cyan-400">H-CBDC</span>
+                                        </div>
+                                    </div>
+                                    <div className="mt-8 pt-4 border-t border-gray-800 flex justify-between items-center text-xs font-mono">
+                                        <span className="text-gray-400">Smart Contract Ledger:</span>
+                                        <span className="text-emerald-400">VERIFIED ON-CHAIN</span>
+                                    </div>
+                                </div>
+
+                                <div className="glass-panel rounded-3xl p-6 border-blue-500/30 flex flex-col justify-between">
+                                    <div>
+                                        <span className="text-xs font-mono text-blue-400 uppercase tracking-widest">Gyeongju 165F Real Estate STO</span>
+                                        <h3 className="text-gray-400 text-sm mt-1">{t.stoEquity}</h3>
+                                        <div className="text-4xl font-orbitron font-extrabold text-blue-300 mt-2">
+                                            850,000 <span className="text-lg font-normal text-blue-400">HG-TOWER</span>
+                                        </div>
+                                    </div>
+                                    <div className="mt-8 pt-4 border-t border-gray-800 flex justify-between items-center text-xs font-mono">
+                                        <span className="text-gray-400">Monthly Yield Distribution:</span>
+                                        <span className="text-cyan-300 font-bold">+5.2% Real-Time H-CBDC</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* TAB 3: 8M MEGA-CITY IOT */}
+                        {activeTab === 'city' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Robot Control Card */}
+                                <div className="glass-panel rounded-3xl p-6 border-purple-500/30">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h3 className="font-bold text-lg text-purple-300 font-orbitron">{t.robotStatus}</h3>
+                                        <span className="w-3 h-3 rounded-full bg-purple-400 animate-ping"></span>
+                                    </div>
+                                    <p className="text-sm text-gray-300 mb-6 font-mono">{t.robotOnline}</p>
+                                    <button 
+                                        onClick={() => setRobotAssist(!robotAssist)}
+                                        className={`w-full py-3 rounded-xl font-mono text-xs font-bold transition-all ${
+                                            robotAssist 
+                                                ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/40' 
+                                                : 'bg-gray-800 text-gray-400'
+                                        }`}
+                                    >
+                                        {robotAssist ? 'ROBOT CARE: FULL AUTONOMOUS' : 'PAUSE ROBOT TASK'}
+                                    </button>
+                                </div>
+
+                                {/* UAM Call Card */}
+                                <div className="glass-panel rounded-3xl p-6 border-emerald-500/30">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h3 className="font-bold text-lg text-emerald-300 font-orbitron">{t.uamStatus}</h3>
+                                        <span className="text-xs font-mono text-emerald-400 bg-emerald-950 px-2 py-1 rounded">VERTIPORT LINK</span>
+                                    </div>
+                                    <p className="text-sm text-gray-300 mb-6 font-mono">
+                                        {uamCalled ? t.uamETA : 'Request Autonomous Air Taxi to 165F Vertiport'}
+                                    </p>
+                                    <button 
+                                        onClick={() => setUamCalled(!uamCalled)}
+                                        className={`w-full py-3 rounded-xl font-mono text-xs font-bold transition-all ${
+                                            uamCalled 
+                                                ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/40' 
+                                                : 'bg-emerald-950 border border-emerald-500/50 text-emerald-300 hover:bg-emerald-900'
+                                        }`}
+                                    >
+                                        {uamCalled ? 'UAM EN ROUTE (CANCEL)' : 'DISPATCH UAM SHUTTLE'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* TAB 4: HARDWARE SPECS */}
+                        {activeTab === 'specs' && (
+                            <div className="glass-panel rounded-3xl p-6 border-cyan-500/30">
+                                <h3 className="text-xl font-extrabold text-cyan-400 font-orbitron mb-6 neon-glow-cyan">
+                                    {t.specsHeader}
+                                </h3>
+                                <div className="space-y-4 font-mono text-sm">
+                                    <div className="p-4 rounded-xl bg-gray-900/80 border border-gray-800 flex justify-between items-center">
+                                        <span className="text-gray-400">Display Tech:</span>
+                                        <span className="text-cyan-300 font-bold">{t.specDisplay}</span>
+                                    </div>
+                                    <div className="p-4 rounded-xl bg-gray-900/80 border border-gray-800 flex justify-between items-center">
+                                        <span className="text-gray-400">Neural Chipset:</span>
+                                        <span className="text-cyan-300 font-bold">{t.specChip}</span>
+                                    </div>
+                                    <div className="p-4 rounded-xl bg-gray-900/80 border border-gray-800 flex justify-between items-center">
+                                        <span className="text-gray-400">Power Cell:</span>
+                                        <span className="text-cyan-300 font-bold">{t.specBattery}</span>
+                                    </div>
+                                    <div className="p-4 rounded-xl bg-gray-900/80 border border-gray-800 flex justify-between items-center">
+                                        <span className="text-gray-400">Connectivity:</span>
+                                        <span className="text-cyan-300 font-bold">{t.specComms}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                    </main>
+
+                    {/* --- FOOTER / GITHUB BRANDING --- */}
+                    <footer className="glass-panel rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4 text-xs font-mono text-gray-400">
+                        <div className="flex items-center gap-2">
+                            <i data-lucide="github" className="w-4 h-4 text-cyan-400"></i>
+                            <span>PHK Group Open-Source Project: <strong className="text-white">HK-NEXUS-OS</strong></span>
+                        </div>
+                        <div className="text-cyan-400 font-bold">
+                            {t.githubTag}
+                        </div>
+                    </footer>
+
+                </div>
+            );
         }
-    </script>
 
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+    <script>
+        // Lucide Icons Initialization
+        setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 500);
+    </script>
 </body>
 </html>
