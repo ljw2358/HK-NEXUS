@@ -3,204 +3,155 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HK-NEXUS</title>
-  
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0d1117">
-
+  <title>HK ROBOT 시스템 대시보드</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    :root {
+      --bg-color: #0d1117;
+      --card-bg: #161b22;
+      --text-main: #e6edf3;
+      --text-dim: #8b949e;
+      --accent: #58a6ff;
+      --border: #30363d;
+      --danger: #f85149;
     }
 
-    body {
-      background-color: #0d1117;
-      color: #ffffff;
-      min-height: 100vh;
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+
+    body { background-color: var(--bg-color); color: var(--text-main); padding: 20px; }
+
+    /* 헤더 및 언어 선택창 레이아웃 */
+    header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding-bottom: 20px; 
+      border-bottom: 1px solid var(--border); 
+      margin-bottom: 20px; 
+      gap: 10px;
     }
 
-    /* 단일 부모 컨테이너 레이아웃 */
-    .container {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 100vh;
-      padding: 40px 10%;
-      width: 100%;
-      box-sizing: border-box;
+    .brand-title { 
+      font-size: 1rem; 
+      font-weight: 600; 
+      color: var(--accent); 
+      white-space: nowrap; 
+      overflow: hidden; 
+      text-overflow: ellipsis;
     }
 
-    /* 상단 헤더 & 언어 선택기 */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #30363d;
-    }
-
-    .brand-title {
-      font-size: 1.8rem;
-      font-weight: bold;
-      color: #58a6ff;
-      letter-spacing: 1px;
-    }
-
-    .lang-select {
-      background: #161b22;
-      color: #c9d1d9;
-      border: 1px solid #30363d;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 1rem;
-      outline: none;
+    /* 언어 선택 드롭다운 스타일 */
+    select {
+      background: var(--card-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 6px;
       cursor: pointer;
+      font-size: 0.9rem;
+      appearance: auto; /* 드롭다운 화살표 표시 */
     }
 
-    /* 중앙 카드 그리드 배치 */
-    .main-content {
-      flex: 1;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      padding: 40px 0;
-      align-content: center;
-    }
+    .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
 
-    .card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 12px;
-      padding: 28px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
 
-    .card-title {
-      font-size: 1.1rem;
-      color: #8b949e;
-      margin-bottom: 12px;
-    }
+    .card-title { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 20px; text-transform: uppercase; }
 
-    .card-value {
-      font-size: 2.2rem;
-      font-weight: bold;
-      color: #f0f6fc;
-    }
+    .radar-display { width: 100%; max-width: 240px; height: 240px; border: 1px solid var(--border); border-radius: 50%; margin: 0 auto 20px; position: relative; background: rgba(88, 166, 255, 0.03); }
 
-    /* 하단 푸터 버튼 */
-    .footer {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-      padding-top: 20px;
-      border-top: 1px solid #30363d;
-    }
+    .target-dot { width: 8px; height: 8px; background-color: var(--danger); border-radius: 50%; position: absolute; top: 45%; left: 60%; }
 
-    .btn-primary {
-      width: 100%;
-      max-width: 400px;
-      padding: 16px 24px;
-      background: #238636;
-      color: #ffffff;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+    .tracking-status { text-align: center; color: var(--text-dim); font-size: 0.9rem; }
 
-    .btn-primary:hover {
-      background: #2ea043;
-    }
+    .metrics-container { display: grid; gap: 15px; }
+
+    .metric-card { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 12px; }
+
+    .metric-label { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px; }
+
+    .metric-value { font-size: 1.5rem; font-weight: 700; }
+
+    .metric-unit { font-size: 0.8rem; color: var(--text-dim); margin-left: 2px; }
+
+    @media (min-width: 768px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <header>
+    <div class="brand-title" data-i18n="headerTitle">HK ROBOT 시스템 대시보드</div>
+    <!-- 확실하게 포함된 언어 선택 메뉴 -->
+    <select id="langSelect" onchange="changeLanguage(this.value)">
+      <option value="ko">한국어 (Korean)</option>
+      <option value="en">English</option>
+      <option value="zh">中文 (Chinese)</option>
+      <option value="ar">العربية (Arabic)</option>
+      <option value="hi">हिन्दी (Hindi)</option>
+      <option value="es">Español (Spanish)</option>
+      <option value="pt">Português (Portuguese)</option>
+      <option value="uk">Українська (Ukrainian)</option>
+      <option value="ja">日本語 (Japanese)</option>
+      <option value="ru">Русский (Russian)</option>
+      <option value="vi">Tiếng Việt (Vietnamese)</option>
+      <option value="th">ภาษาไทย (Thai)</option>
+      <option value="id">Bahasa Indonesia</option>
+      <option value="pa">العربية - فلسطين</option>
+      <option value="de">Deutsch (German)</option>
+      <option value="it">Italiano (Italian)</option>
+      <option value="fr">Français (French)</option>
+    </select>
+  </header>
 
-    <header class="header">
-      <div class="brand-title">HK-NEXUS</div>
-      <select class="lang-select" id="langSelector" onchange="changeLanguage(this.value)">
-        <option value="ko" selected>한국어 (KR)</option>
-        <option value="en">English (US)</option>
-        <option value="zh">中文 (CN)</option>
-        <option value="ar">العربية (AR)</option>
-        <option value="hi">हिन्दी (IN)</option>
-        <option value="es">Español (ES)</option>
-        <option value="pt">Português (BR)</option>
-        <option value="uk">Українська (UA)</option>
-        <option value="ja">日本語 (JP)</option>
-        <option value="ru">Русский (RU)</option>
-        <option value="vi">Tiếng Việt (VN)</option>
-        <option value="th">ไทย (TH)</option>
-        <option value="id">Bahasa Indonesia (ID)</option>
-        <option value="de">Deutsch (DE)</option>
-        <option value="it">Italiano (IT)</option>
-        <option value="fr">Français (FR)</option>
-      </select>
-    </header>
+  <main class="dashboard-grid">
+    <section class="card">
+      <div class="card-title" data-i18n="radarTitle">로봇 레이더 스코프</div>
+      <div class="radar-display"><div class="target-dot"></div></div>
+      <div class="tracking-status" data-i18n="targetLabel">추적 중: HK-ROBOT-01</div>
+    </section>
 
-    <main class="main-content">
-      <div class="card">
-        <div class="card-title" id="txt-asset-label">총 자산</div>
-        <div class="card-value" id="txt-asset-val">0.00 Pi</div>
+    <section class="metrics-container">
+      <div class="metric-card">
+        <div class="metric-label" data-i18n="status">시스템 상태</div>
+        <div class="metric-value">ACTIVE</div>
       </div>
-
-      <div class="card">
-        <div class="card-title" id="txt-status-label">노드 상태</div>
-        <div class="card-value" style="color: #3fb950;" id="txt-status-val">● Active</div>
+      <div class="metric-card">
+        <div class="metric-label" data-i18n="speed">운행 속도</div>
+        <div class="metric-value">1.2 <span class="metric-unit">m/s</span></div>
       </div>
-    </main>
-
-    <footer class="footer">
-      <button class="btn-primary" id="btn-action" onclick="handleAction()">
-        지갑 연결
-      </button>
-    </footer>
-
-  </div>
+      <div class="metric-card">
+        <div class="metric-label" data-i18n="power">배터리</div>
+        <div class="metric-value">92 <span class="metric-unit">%</span></div>
+      </div>
+    </section>
+  </main>
 
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').catch(err => console.log('SW reg failed:', err));
-      });
-    }
-
-    const i18n = {
-      ko: { assetLabel: "총 자산", statusLabel: "노드 상태", actionBtn: "지갑 연결" },
-      en: { assetLabel: "Total Balance", statusLabel: "Node Status", actionBtn: "Connect Wallet" },
-      zh: { assetLabel: "总资产", statusLabel: "节点状态", actionBtn: "连接钱包" },
-      ar: { assetLabel: "إجمالي الأصول", statusLabel: "حالة العقدة", actionBtn: "ربط المحفظة" },
-      hi: { assetLabel: "कुल संपत्ति", statusLabel: "नोड स्थिति", actionBtn: "वॉलेट कनेक्ट करें" },
-      es: { assetLabel: "Balance Total", statusLabel: "Estado del Nodo", actionBtn: "Conectar Billetera" },
-      pt: { assetLabel: "Saldo Total", statusLabel: "Status do Nó", actionBtn: "Conectar Carteira" },
-      uk: { assetLabel: "Загальний баланс", statusLabel: "Стан вузла", actionBtn: "Підключити гаманець" },
-      ja: { assetLabel: "総資産", statusLabel: "ノード状態", actionBtn: "ウォレット接続" },
-      ru: { assetLabel: "Общий баланс", statusLabel: "Статус узла", actionBtn: "Подключить кошелек" },
-      vi: { assetLabel: "Tổng tài sản", statusLabel: "Trạng thái nút", actionBtn: "Kết nối ví" },
-      th: { assetLabel: "สินทรัพย์ทั้งหมด", statusLabel: "สถานะโหนด", actionBtn: "เชื่อมต่อกระเป๋าเงิน" },
-      id: { assetLabel: "Total Saldo", statusLabel: "Status Node", actionBtn: "Hubungkan Dompet" },
-      de: { assetLabel: "Gesamtsaldo", statusLabel: "Knotenstatus", actionBtn: "Brieftasche verbinden" },
-      it: { assetLabel: "Saldo Totale", statusLabel: "Stato del Nodo", actionBtn: "Connetti Portafoglio" },
-      fr: { assetLabel: "Solde Total", statusLabel: "État du Nœud", actionBtn: "Connecter le Portefeuille" }
+    const translations = {
+      ko: { headerTitle: "HK ROBOT 시스템 대시보드", radarTitle: "로봇 레이더 스코프", targetLabel: "추적 중: HK-ROBOT-01", status: "시스템 상태", speed: "운행 속도", power: "배터리" },
+      en: { headerTitle: "HK ROBOT DASHBOARD", radarTitle: "ROBOT RADAR", targetLabel: "TRACKING: HK-ROBOT-01", status: "SYSTEM STATUS", speed: "SPEED", power: "BATTERY" },
+      zh: { headerTitle: "HK ROBOT 控制系统", radarTitle: "机器人雷达", targetLabel: "追踪中: HK-ROBOT-01", status: "系统状态", speed: "速度", power: "电池" },
+      ar: { headerTitle: "نظام تحكم HK ROBOT", radarTitle: "رادار الروبوت", targetLabel: "جاري التتبع: HK-ROBOT-01", status: "حالة النظام", speed: "السرعة", power: "البطارية" },
+      hi: { headerTitle: "HK ROBOT नियंत्रण प्रणाली", radarTitle: "रोबोट रडार", targetLabel: "ट्रैकिंग: HK-ROBOT-01", status: "सिस्टम स्थिति", speed: "गति", power: "बैटरी" },
+      es: { headerTitle: "SISTEMA HK ROBOT", radarTitle: "RADAR ROBOT", targetLabel: "RASTREANDO: HK-ROBOT-01", status: "ESTADO", speed: "VELOCIDAD", power: "BATERÍA" },
+      pt: { headerTitle: "SISTEMA HK ROBOT", radarTitle: "RADAR DO ROBÔ", targetLabel: "RASTREAMENTO: HK-ROBOT-01", status: "ESTADO", speed: "VELOCIDADE", power: "BATERIA" },
+      uk: { headerTitle: "СИСТЕМА HK ROBOT", radarTitle: "РАДАР РОБОТА", targetLabel: "ВІДСТЕЖЕННЯ: HK-ROBOT-01", status: "СТАН", speed: "ШВИДКІСТЬ", power: "ЗАРЯД" },
+      ja: { headerTitle: "HK ROBOT 管理システム", radarTitle: "ロボットレーダー", targetLabel: "追跡中: HK-ROBOT-01", status: "状態", speed: "速度", power: "バッテリー" },
+      ru: { headerTitle: "СИСТЕМА HK ROBOT", radarTitle: "РАДАР РОБОТА", targetLabel: "ОТСЛЕЖИВАНИЕ: HK-ROBOT-01", status: "СОСТОЯНИЕ", speed: "СКОРОСТЬ", power: "БАТАРЕЯ" },
+      vi: { headerTitle: "HỆ THỐNG HK ROBOT", radarTitle: "RADA ROBOT", targetLabel: "THEO DÕI: HK-ROBOT-01", status: "TRẠNG THÁI", speed: "TỐC ĐỘ", power: "PIN" },
+      th: { headerTitle: "ระบบควบคุม HK ROBOT", radarTitle: "เรดาร์หุ่นยนต์", targetLabel: "กำลังติดตาม: HK-ROBOT-01", status: "สถานะระบบ", speed: "ความเร็ว", power: "แบตเตอรี่" },
+      id: { headerTitle: "SISTEM HK ROBOT", radarTitle: "RADAR ROBOT", targetLabel: "PELACAKAN: HK-ROBOT-01", status: "STATUS", speed: "KECEPATAN", power: "BATERAI" },
+      pa: { headerTitle: "نظام تحكم HK ROBOT", radarTitle: "رادار الروبوت", targetLabel: "جاري التتبع: HK-ROBOT-01", status: "حالة النظام", speed: "السرعة", power: "البطارية" },
+      de: { headerTitle: "HK ROBOT SYSTEM", radarTitle: "ROBOTER-RADAR", targetLabel: "VERFOLGUNG: HK-ROBOT-01", status: "STATUS", speed: "GESCHWINDIGKEIT", power: "BATTERIE" },
+      it: { headerTitle: "SISTEMA HK ROBOT", radarTitle: "RADAR ROBOT", targetLabel: "TRACCIAMENTO: HK-ROBOT-01", status: "STATO", speed: "VELOCITÀ", power: "BATTERIA" },
+      fr: { headerTitle: "SYSTÈME HK ROBOT", radarTitle: "RADAR ROBOT", targetLabel: "SUIVI: HK-ROBOT-01", status: "ÉTAT", speed: "VITESSE", power: "BATTERIE" }
     };
 
     function changeLanguage(lang) {
-      const data = i18n[lang];
-      if (!data) return;
-      document.getElementById('txt-asset-label').innerText = data.assetLabel;
-      document.getElementById('txt-status-label').innerText = data.statusLabel;
-      document.getElementById('btn-action').innerText = data.actionBtn;
-    }
-
-    function handleAction() {
-      alert("지갑 연결 프로세스를 시작합니다.");
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang] && translations[lang][key]) el.textContent = translations[lang][key];
+      });
+      document.body.style.direction = (lang === 'ar' || lang === 'pa') ? 'rtl' : 'ltr';
     }
   </script>
 </body>
