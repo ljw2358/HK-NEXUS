@@ -1,19 +1,14 @@
-혜공 형님, 제가 제대로 알아듣지 못해서 답답하게 해드렸네요!
-**스마트 글래스(안경)나 스마트폰 양쪽 화면(양안/SBS: Side-by-Side)**에서 제대로 보이도록, 화면을 좌/우 2개로 똑같이 나누어서(양안 입체/AR 글래스 디스플레이 대응) 띄우는 레이아웃을 말씀하신 거였군요!
-스마트 글래스를 끼고 보셨을 때 좌우 시야에 딱 맞춰 입체감/듀얼 디스플레이로 투사될 수 있도록, **양안(SBS) 듀얼 화면 전용 index.html**로 싹 개편했습니다.
-이 코드 통째로 복사해서 넣으시면 좌측/우측 화면에 똑같이 UI가 양쪽으로 분할되어 띄워집니다!
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>HK-NEXUS AR/Glass</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HK-NEXUS</title>
   
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#0d1117">
 
   <style>
-    /* 기본 초기화 - 글래스/VR 모드용 완전 검은 배경 */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -22,43 +17,33 @@
     }
 
     body {
-      background-color: #000000; /* 글래스 투과율 및 대비 최적화를 위한 리얼 블랙 */
+      background-color: #0d1117;
       color: #ffffff;
-      height: 100vh;
-      overflow: hidden;
+      min-height: 100vh;
     }
 
-    /* 양안(SBS: Side-by-Side) 분할 전체 컨테이너 */
-    .sbs-wrapper {
-      display: flex;
-      width: 100vw;
-      height: 100vh;
-    }
-
-    /* 좌/우 각각의 스마트폰/안경 화면 패널 */
-    .view-panel {
-      flex: 1;
-      width: 50vw;
-      height: 100vh;
+    /* 단일 부모 컨테이너 레이아웃 */
+    .container {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 25px 20px;
-      border-right: 1px solid #1a1a1a; /* 중앙 경계선 */
+      min-height: 100vh;
+      padding: 40px 10%;
+      width: 100%;
       box-sizing: border-box;
     }
 
-    /* 헤더 영역 */
+    /* 상단 헤더 & 언어 선택기 */
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 12px;
+      padding-bottom: 20px;
       border-bottom: 1px solid #30363d;
     }
 
     .brand-title {
-      font-size: 1.2rem;
+      font-size: 1.8rem;
       font-weight: bold;
       color: #58a6ff;
       letter-spacing: 1px;
@@ -68,151 +53,118 @@
       background: #161b22;
       color: #c9d1d9;
       border: 1px solid #30363d;
-      padding: 5px 8px;
-      border-radius: 6px;
-      font-size: 0.8rem;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 1rem;
       outline: none;
+      cursor: pointer;
     }
 
-    /* 메인 콘텐츠 카드 */
+    /* 중앙 카드 그리드 배치 */
     .main-content {
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 12px;
-      padding: 15px 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 40px 0;
+      align-content: center;
     }
 
     .card {
       background: #161b22;
       border: 1px solid #30363d;
-      border-radius: 10px;
-      padding: 16px;
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
     .card-title {
-      font-size: 0.85rem;
+      font-size: 1.1rem;
       color: #8b949e;
-      margin-bottom: 6px;
+      margin-bottom: 12px;
     }
 
     .card-value {
-      font-size: 1.4rem;
+      font-size: 2.2rem;
       font-weight: bold;
       color: #f0f6fc;
     }
 
-    /* 푸터 & 액션 버튼 */
+    /* 하단 푸터 버튼 */
     .footer {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      padding-top: 12px;
+      align-items: center;
+      gap: 15px;
+      padding-top: 20px;
       border-top: 1px solid #30363d;
     }
 
     .btn-primary {
       width: 100%;
-      padding: 12px;
+      max-width: 400px;
+      padding: 16px 24px;
       background: #238636;
       color: #ffffff;
       border: none;
-      border-radius: 6px;
-      font-size: 0.95rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
       font-weight: bold;
       cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #2ea043;
     }
   </style>
 </head>
 <body>
 
-  <!-- 양안(SBS) 분할 전체 레이아웃 -->
-  <div class="sbs-wrapper">
+  <div class="container">
 
-    <!-- [1] 왼쪽 안경/눈 화면 (LEFT EYE) -->
-    <div class="view-panel">
-      <header class="header">
-        <div class="brand-title">HK-NEXUS</div>
-        <select class="lang-select" onchange="syncLanguage(this.value)">
-          <option value="ko" selected>한국어 (KR)</option>
-          <option value="en">English (US)</option>
-          <option value="zh">中文 (CN)</option>
-          <option value="ar">العربية (AR)</option>
-          <option value="hi">हिन्दी (IN)</option>
-          <option value="es">Español (ES)</option>
-          <option value="pt">Português (BR)</option>
-          <option value="uk">Українська (UA)</option>
-          <option value="ja">日本語 (JP)</option>
-          <option value="ru">Русский (RU)</option>
-          <option value="vi">Tiếng Việt (VN)</option>
-          <option value="th">ไทย (TH)</option>
-          <option value="id">Bahasa Indonesia (ID)</option>
-          <option value="de">Deutsch (DE)</option>
-          <option value="it">Italiano (IT)</option>
-          <option value="fr">Français (FR)</option>
-        </select>
-      </header>
+    <header class="header">
+      <div class="brand-title">HK-NEXUS</div>
+      <select class="lang-select" id="langSelector" onchange="changeLanguage(this.value)">
+        <option value="ko" selected>한국어 (KR)</option>
+        <option value="en">English (US)</option>
+        <option value="zh">中文 (CN)</option>
+        <option value="ar">العربية (AR)</option>
+        <option value="hi">हिन्दी (IN)</option>
+        <option value="es">Español (ES)</option>
+        <option value="pt">Português (BR)</option>
+        <option value="uk">Українська (UA)</option>
+        <option value="ja">日本語 (JP)</option>
+        <option value="ru">Русский (RU)</option>
+        <option value="vi">Tiếng Việt (VN)</option>
+        <option value="th">ไทย (TH)</option>
+        <option value="id">Bahasa Indonesia (ID)</option>
+        <option value="de">Deutsch (DE)</option>
+        <option value="it">Italiano (IT)</option>
+        <option value="fr">Français (FR)</option>
+      </select>
+    </header>
 
-      <main class="main-content">
-        <div class="card">
-          <div class="card-title txt-asset-label">총 자산</div>
-          <div class="card-value">0.00 Pi</div>
-        </div>
-        <div class="card">
-          <div class="card-title txt-status-label">노드 상태</div>
-          <div class="card-value" style="color: #3fb950;">● Active</div>
-        </div>
-      </main>
+    <main class="main-content">
+      <div class="card">
+        <div class="card-title" id="txt-asset-label">총 자산</div>
+        <div class="card-value" id="txt-asset-val">0.00 Pi</div>
+      </div>
 
-      <footer class="footer">
-        <button class="btn-primary btn-action" onclick="handleAction()">지갑 연결</button>
-      </footer>
-    </div>
+      <div class="card">
+        <div class="card-title" id="txt-status-label">노드 상태</div>
+        <div class="card-value" style="color: #3fb950;" id="txt-status-val">● Active</div>
+      </div>
+    </main>
 
-    <!-- [2] 오른쪽 안경/눈 화면 (RIGHT EYE) -->
-    <div class="view-panel">
-      <header class="header">
-        <div class="brand-title">HK-NEXUS</div>
-        <select class="lang-select" id="rightLangSelector" onchange="syncLanguage(this.value)">
-          <option value="ko" selected>한국어 (KR)</option>
-          <option value="en">English (US)</option>
-          <option value="zh">中文 (CN)</option>
-          <option value="ar">العربية (AR)</option>
-          <option value="hi">हिन्दी (IN)</option>
-          <option value="es">Español (ES)</option>
-          <option value="pt">Português (BR)</option>
-          <option value="uk">Українська (UA)</option>
-          <option value="ja">日本語 (JP)</option>
-          <option value="ru">Русский (RU)</option>
-          <option value="vi">Tiếng Việt (VN)</option>
-          <option value="th">ไทย (TH)</option>
-          <option value="id">Bahasa Indonesia (ID)</option>
-          <option value="de">Deutsch (DE)</option>
-          <option value="it">Italiano (IT)</option>
-          <option value="fr">Français (FR)</option>
-        </select>
-      </header>
-
-      <main class="main-content">
-        <div class="card">
-          <div class="card-title txt-asset-label">총 자산</div>
-          <div class="card-value">0.00 Pi</div>
-        </div>
-        <div class="card">
-          <div class="card-title txt-status-label">노드 상태</div>
-          <div class="card-value" style="color: #3fb950;">● Active</div>
-        </div>
-      </main>
-
-      <footer class="footer">
-        <button class="btn-primary btn-action" onclick="handleAction()">지갑 연결</button>
-      </footer>
-    </div>
+    <footer class="footer">
+      <button class="btn-primary" id="btn-action" onclick="handleAction()">
+        지갑 연결
+      </button>
+    </footer>
 
   </div>
 
-  <!-- 양안 동기화 스크립트 -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -239,18 +191,12 @@
       fr: { assetLabel: "Solde Total", statusLabel: "État du Nœud", actionBtn: "Connecter le Portefeuille" }
     };
 
-    // 좌/우 양쪽 화면 언어 동기화 변경
-    function syncLanguage(lang) {
+    function changeLanguage(lang) {
       const data = i18n[lang];
       if (!data) return;
-
-      // 선택 드롭다운 양쪽 동기화
-      document.querySelectorAll('.lang-select').forEach(select => select.value = lang);
-
-      // 텍스트 라벨 양쪽 동기화
-      document.querySelectorAll('.txt-asset-label').forEach(el => el.innerText = data.assetLabel);
-      document.querySelectorAll('.txt-status-label').forEach(el => el.innerText = data.statusLabel);
-      document.querySelectorAll('.btn-action').forEach(el => el.innerText = data.actionBtn);
+      document.getElementById('txt-asset-label').innerText = data.assetLabel;
+      document.getElementById('txt-status-label').innerText = data.statusLabel;
+      document.getElementById('btn-action').innerText = data.actionBtn;
     }
 
     function handleAction() {
