@@ -24,13 +24,13 @@
       min-height: 100vh;
     }
 
-    /* 부모 컨테이너 - 모니터 반응형 화면 레이아웃 */
+    /* 부모 컨테이너 - 모니터 반응형 레이아웃 */
     .container {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       min-height: 100vh;
-      padding: 40px 10%; /* PC 화면에 맞춘 좌우 여백 */
+      padding: 40px 10%;
       width: 100%;
       box-sizing: border-box;
     }
@@ -61,11 +61,11 @@
       cursor: pointer;
     }
 
-    /* 2. 중앙 메인 콘텐츠 영역 (PC 화면에서는 그리드 배치) */
+    /* 2. 중앙 메인 콘텐츠 영역 (그리드 배치) */
     .main-content {
       flex: 1;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 화면 넓이에 따라 자동 정렬 */
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 20px;
       padding: 40px 0;
       align-content: center;
@@ -104,7 +104,7 @@
 
     .btn-primary {
       width: 100%;
-      max-width: 400px; /* 버튼이 너무 과하게 커지지 않도록 한계값 설정 */
+      max-width: 400px;
       padding: 16px 24px;
       background: #238636;
       color: #ffffff;
@@ -126,17 +126,30 @@
   <!-- 전체 화면 부모 컨테이너 -->
   <div class="container">
 
-    <!-- 상단 영역: 브랜딩 및 다국어 선택기 -->
+    <!-- 상단 영역: 브랜딩 및 16개국 다국어 선택기 -->
     <header class="header">
       <div class="brand-title">HK WorldBank</div>
       <select class="lang-select" id="langSelector" onchange="changeLanguage(this.value)">
         <option value="ko" selected>한국어 (KR)</option>
-        <option value="en">English (EN)</option>
-        <option value="zh">中文 (ZH)</option>
+        <option value="en">English (US)</option>
+        <option value="zh">中文 (CN)</option>
+        <option value="ar">العربية (AR)</option>
+        <option value="hi">हिन्दी (IN)</option>
+        <option value="es">Español (ES)</option>
+        <option value="pt">Português (BR)</option>
+        <option value="uk">Українська (UA)</option>
+        <option value="ja">日本語 (JP)</option>
+        <option value="ru">Русский (RU)</option>
+        <option value="vi">Tiếng Việt (VN)</option>
+        <option value="th">ไทย (TH)</option>
+        <option value="id">Bahasa Indonesia (ID)</option>
+        <option value="de">Deutsch (DE)</option>
+        <option value="it">Italiano (IT)</option>
+        <option value="fr">Français (FR)</option>
       </select>
     </header>
 
-    <!-- 중앙 영역: 주요 대시보드 카드가 PC에 맞게 넓게 배치됨 -->
+    <!-- 중앙 영역: 대시보드 카드 -->
     <main class="main-content">
       <div class="card">
         <div class="card-title" id="txt-asset-label">총 자산 (Total Balance)</div>
@@ -149,7 +162,7 @@
       </div>
     </main>
 
-    <!-- 하단 영역: 주 기능 실행 버튼 -->
+    <!-- 하단 영역: 지갑 연결 버튼 -->
     <footer class="footer">
       <button class="btn-primary" id="btn-action" onclick="handleAction()">
         지갑 연결 (Connect Wallet)
@@ -158,7 +171,7 @@
 
   </div>
 
-  <!-- 다국어 변경 스크립트 -->
+  <!-- 16개국 언어 다국어 스크립트 -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -166,22 +179,24 @@
       });
     }
 
+    // 16개국 번역 데이터
     const i18n = {
-      ko: {
-        assetLabel: "총 자산 (Total Balance)",
-        statusLabel: "노드 상태 (Node Status)",
-        actionBtn: "지갑 연결 (Connect Wallet)"
-      },
-      en: {
-        assetLabel: "Total Balance",
-        statusLabel: "Node Status",
-        actionBtn: "Connect Wallet"
-      },
-      zh: {
-        assetLabel: "总资产",
-        statusLabel: "节点状态",
-        actionBtn: "连接钱包"
-      }
+      ko: { assetLabel: "총 자산", statusLabel: "노드 상태", actionBtn: "지갑 연결" },
+      en: { assetLabel: "Total Balance", statusLabel: "Node Status", actionBtn: "Connect Wallet" },
+      zh: { assetLabel: "总资产", statusLabel: "节点状态", actionBtn: "连接钱包" },
+      ar: { assetLabel: "إجمالي الأصول", statusLabel: "حالة العقدة", actionBtn: "ربط المحفظة" },
+      hi: { assetLabel: "कुल संपत्ति", statusLabel: "नोड स्थिति", actionBtn: "वॉलेट कनेक्ट करें" },
+      es: { assetLabel: "Balance Total", statusLabel: "Estado del Nodo", actionBtn: "Conectar Billetera" },
+      pt: { assetLabel: "Saldo Total", statusLabel: "Status do Nó", actionBtn: "Conectar Carteira" },
+      uk: { assetLabel: "Загальний баланс", statusLabel: "Стан вузла", actionBtn: "Підключити гаманець" },
+      ja: { assetLabel: "総資産", statusLabel: "ノード状態", actionBtn: "ウォレット接続" },
+      ru: { assetLabel: "Общий баланс", statusLabel: "Статус узла", actionBtn: "Подключить кошелек" },
+      vi: { assetLabel: "Tổng tài sản", statusLabel: "Trạng thái nút", actionBtn: "Kết nối ví" },
+      th: { assetLabel: "สินทรัพย์ทั้งหมด", statusLabel: "สถานะโหนด", actionBtn: "เชื่อมต่อกระเป๋าเงิน" },
+      id: { assetLabel: "Total Saldo", statusLabel: "Status Node", actionBtn: "Hubungkan Dompet" },
+      de: { assetLabel: "Gesamtsaldo", statusLabel: "Knotenstatus", actionBtn: "Brieftasche verbinden" },
+      it: { assetLabel: "Saldo Totale", statusLabel: "Stato del Nodo", actionBtn: "Connetti Portafoglio" },
+      fr: { assetLabel: "Solde Total", statusLabel: "État du Nœud", actionBtn: "Connecter le Portefeuille" }
     };
 
     function changeLanguage(lang) {
