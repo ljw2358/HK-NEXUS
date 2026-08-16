@@ -1,158 +1,423 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HK ROBOT 시스템 대시보드</title>
-  <style>
-    :root {
-      --bg-color: #0d1117;
-      --card-bg: #161b22;
-      --text-main: #e6edf3;
-      --text-dim: #8b949e;
-      --accent: #58a6ff;
-      --border: #30363d;
-      --danger: #f85149;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="doc-title">HK NEXUS 시스템 대시보드</title>
+    <style>
+        :root {
+            --bg-color: #0b1329;
+            --card-bg: #111e38;
+            --card-border: #1d2d50;
+            --text-color: #ffffff;
+            --text-secondary: #8a99ad;
+            --accent-blue: #00d2ff;
+            --accent-green: #00ff88;
+        }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
 
-    body { background-color: var(--bg-color); color: var(--text-main); padding: 20px; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            min-height: 100vh;
+        }
 
-    /* 헤더 및 언어 선택창 레이아웃 */
-    header { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      padding-bottom: 20px; 
-      border-bottom: 1px solid var(--border); 
-      margin-bottom: 20px; 
-      gap: 10px;
-    }
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
 
-    .brand-title { 
-      font-size: 1rem; 
-      font-weight: 600; 
-      color: var(--accent); 
-      white-space: nowrap; 
-      overflow: hidden; 
-      text-overflow: ellipsis;
-    }
+        .header h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
 
-    /* 언어 선택 드롭다운 스타일 */
-    select {
-      background: var(--card-bg);
-      color: var(--text-main);
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      appearance: auto; /* 드롭다운 화살표 표시 */
-    }
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
 
-    .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        /* Select Box */
+        .lang-select, .user-menu {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            outline: none;
+            cursor: pointer;
+        }
 
-    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+        .lang-select option {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
 
-    .card-title { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 20px; text-transform: uppercase; }
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
 
-    .radar-display { width: 100%; max-width: 240px; height: 240px; border: 1px solid var(--border); border-radius: 50%; margin: 0 auto 20px; position: relative; background: rgba(88, 166, 255, 0.03); }
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
 
-    .target-dot { width: 8px; height: 8px; background-color: var(--danger); border-radius: 50%; position: absolute; top: 45%; left: 60%; }
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 20px;
+        }
 
-    .tracking-status { text-align: center; color: var(--text-dim); font-size: 0.9rem; }
+        /* Radar Card */
+        .radar-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 380px;
+            position: relative;
+        }
 
-    .metrics-container { display: grid; gap: 15px; }
+        .radar-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
 
-    .metric-card { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 12px; }
+        .radar-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 210, 255, 0.4);
+            background: radial-gradient(circle, rgba(0,210,255,0.05) 0%, rgba(0,0,0,0) 70%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-top: 20px;
+        }
 
-    .metric-label { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px; }
+        .radar-center-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #ff3e3e;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #ff3e3e;
+        }
 
-    .metric-value { font-size: 1.5rem; font-weight: 700; }
+        .radar-footer {
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
 
-    .metric-unit { font-size: 0.8rem; color: var(--text-dim); margin-left: 2px; }
+        /* Status Cards Stack */
+        .status-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
 
-    @media (min-width: 768px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
-  </style>
+        .status-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 110px;
+        }
+
+        .status-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .status-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        .status-value.active {
+            color: var(--accent-green);
+        }
+    </style>
 </head>
 <body>
 
-  <header>
-    <div class="brand-title" data-i18n="headerTitle">HK ROBOT 시스템 대시보드</div>
-    <!-- 확실하게 포함된 언어 선택 메뉴 -->
-    <select id="langSelect" onchange="changeLanguage(this.value)">
-      <option value="ko">한국어 (Korean)</option>
-      <option value="en">English</option>
-      <option value="zh">中文 (Chinese)</option>
-      <option value="ar">العربية (Arabic)</option>
-      <option value="hi">हिन्दी (Hindi)</option>
-      <option value="es">Español (Spanish)</option>
-      <option value="pt">Português (Portuguese)</option>
-      <option value="uk">Українська (Ukrainian)</option>
-      <option value="ja">日本語 (Japanese)</option>
-      <option value="ru">Русский (Russian)</option>
-      <option value="vi">Tiếng Việt (Vietnamese)</option>
-      <option value="th">ภาษาไทย (Thai)</option>
-      <option value="id">Bahasa Indonesia</option>
-      <option value="pa">العربية - فلسطين</option>
-      <option value="de">Deutsch (German)</option>
-      <option value="it">Italiano (Italian)</option>
-      <option value="fr">Français (French)</option>
-    </select>
-  </header>
+    <!-- 헤더 영역 -->
+    <header class="header">
+        <h1 id="title">HK NEXUS 시스템 대시보드</h1>
+        <div class="header-controls">
+            <!-- 요청하신 16개 언어 셀렉트 박스 -->
+            <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
+                <option value="ko" selected>한국어 (KR)</option>
+                <option value="en">English (US)</option>
+                <option value="zh">中文 (CN)</option>
+                <option value="ar">العربية (AR)</option>
+                <option value="hi">हिन्दी (IN - 인도어)</option>
+                <option value="es">Español (ES)</option>
+                <option value="pt_br">Português (BR - 브라질어)</option>
+                <option value="uk">Українська (UA - 우크라이나어)</option>
+                <option value="ja">日本語 (JP)</option>
+                <option value="ru">Русский (RU)</option>
+                <option value="vi">Tiếng Việt (VN - 베트남어)</option>
+                <option value="th">ไทย (TH - 태국어)</option>
+                <option value="id">Bahasa Indonesia (ID)</option>
+                <option value="ar_ps">العربية (PS - 팔레스타인어)</option>
+                <option value="de">Deutsch (DE)</option>
+                <option value="it">Italiano (IT)</option>
+                <option value="fr">Français (FR)</option>
+            </select>
+            <div class="user-menu" id="user-menu">관리자 (Admin)</div>
+        </div>
+    </header>
 
-  <main class="dashboard-grid">
-    <section class="card">
-      <div class="card-title" data-i18n="radarTitle">로봇 레이더 스코프</div>
-      <div class="radar-display"><div class="target-dot"></div></div>
-      <div class="tracking-status" data-i18n="targetLabel">추적 중: HK-ROBOT-01</div>
-    </section>
+    <!-- 대시보드 메인 콘텐츠 -->
+    <main class="dashboard-grid">
+        
+        <!-- 레이더 스코프 카드 -->
+        <section class="card radar-card">
+            <div class="radar-title" id="radar-title">타겟 레이더 스코프</div>
+            <div class="radar-circle">
+                <div class="radar-center-dot"></div>
+            </div>
+            <div class="radar-footer" id="radar-footer">추적 ID: HK-NEXUS-01</div>
+        </section>
 
-    <section class="metrics-container">
-      <div class="metric-card">
-        <div class="metric-label" data-i18n="status">시스템 상태</div>
-        <div class="metric-value">ACTIVE</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label" data-i18n="speed">운행 속도</div>
-        <div class="metric-value">1.2 <span class="metric-unit">m/s</span></div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label" data-i18n="power">배터리</div>
-        <div class="metric-value">92 <span class="metric-unit">%</span></div>
-      </div>
-    </section>
-  </main>
+        <!-- 시스템 정보 카드 목록 -->
+        <div class="status-stack">
+            <section class="status-card">
+                <div class="status-label" id="lbl-status">시스템 상태</div>
+                <div class="status-value active" id="val-status">ACTIVE</div>
+            </section>
 
-  <script>
-    const translations = {
-      ko: { headerTitle: "HK ROBOT 시스템 대시보드", radarTitle: "로봇 레이더 스코프", targetLabel: "추적 중: HK-ROBOT-01", status: "시스템 상태", speed: "운행 속도", power: "배터리" },
-      en: { headerTitle: "HK ROBOT DASHBOARD", radarTitle: "ROBOT RADAR", targetLabel: "TRACKING: HK-ROBOT-01", status: "SYSTEM STATUS", speed: "SPEED", power: "BATTERY" },
-      zh: { headerTitle: "HK ROBOT 控制系统", radarTitle: "机器人雷达", targetLabel: "追踪中: HK-ROBOT-01", status: "系统状态", speed: "速度", power: "电池" },
-      ar: { headerTitle: "نظام تحكم HK ROBOT", radarTitle: "رادار الروبوت", targetLabel: "جاري التتبع: HK-ROBOT-01", status: "حالة النظام", speed: "السرعة", power: "البطارية" },
-      hi: { headerTitle: "HK ROBOT नियंत्रण प्रणाली", radarTitle: "रोबोट रडार", targetLabel: "ट्रैकिंग: HK-ROBOT-01", status: "सिस्टम स्थिति", speed: "गति", power: "बैटरी" },
-      es: { headerTitle: "SISTEMA HK ROBOT", radarTitle: "RADAR ROBOT", targetLabel: "RASTREANDO: HK-ROBOT-01", status: "ESTADO", speed: "VELOCIDAD", power: "BATERÍA" },
-      pt: { headerTitle: "SISTEMA HK ROBOT", radarTitle: "RADAR DO ROBÔ", targetLabel: "RASTREAMENTO: HK-ROBOT-01", status: "ESTADO", speed: "VELOCIDADE", power: "BATERIA" },
-      uk: { headerTitle: "СИСТЕМА HK ROBOT", radarTitle: "РАДАР РОБОТА", targetLabel: "ВІДСТЕЖЕННЯ: HK-ROBOT-01", status: "СТАН", speed: "ШВИДКІСТЬ", power: "ЗАРЯД" },
-      ja: { headerTitle: "HK ROBOT 管理システム", radarTitle: "ロボットレーダー", targetLabel: "追跡中: HK-ROBOT-01", status: "状態", speed: "速度", power: "バッテリー" },
-      ru: { headerTitle: "СИСТЕМА HK ROBOT", radarTitle: "РАДАР РОБОТА", targetLabel: "ОТСЛЕЖИВАНИЕ: HK-ROBOT-01", status: "СОСТОЯНИЕ", speed: "СКОРОСТЬ", power: "БАТАРЕЯ" },
-      vi: { headerTitle: "HỆ THỐNG HK ROBOT", radarTitle: "RADA ROBOT", targetLabel: "THEO DÕI: HK-ROBOT-01", status: "TRẠNG THÁI", speed: "TỐC ĐỘ", power: "PIN" },
-      th: { headerTitle: "ระบบควบคุม HK ROBOT", radarTitle: "เรดาร์หุ่นยนต์", targetLabel: "กำลังติดตาม: HK-ROBOT-01", status: "สถานะระบบ", speed: "ความเร็ว", power: "แบตเตอรี่" },
-      id: { headerTitle: "SISTEM HK ROBOT", radarTitle: "RADAR ROBOT", targetLabel: "PELACAKAN: HK-ROBOT-01", status: "STATUS", speed: "KECEPATAN", power: "BATERAI" },
-      pa: { headerTitle: "نظام تحكم HK ROBOT", radarTitle: "رادار الروبوت", targetLabel: "جاري التتبع: HK-ROBOT-01", status: "حالة النظام", speed: "السرعة", power: "البطارية" },
-      de: { headerTitle: "HK ROBOT SYSTEM", radarTitle: "ROBOTER-RADAR", targetLabel: "VERFOLGUNG: HK-ROBOT-01", status: "STATUS", speed: "GESCHWINDIGKEIT", power: "BATTERIE" },
-      it: { headerTitle: "SISTEMA HK ROBOT", radarTitle: "RADAR ROBOT", targetLabel: "TRACCIAMENTO: HK-ROBOT-01", status: "STATO", speed: "VELOCITÀ", power: "BATTERIA" },
-      fr: { headerTitle: "SYSTÈME HK ROBOT", radarTitle: "RADAR ROBOT", targetLabel: "SUIVI: HK-ROBOT-01", status: "ÉTAT", speed: "VITESSE", power: "BATTERIE" }
-    };
+            <section class="status-card">
+                <div class="status-label" id="lbl-speed">운행 속도</div>
+                <div class="status-value">1.2 m/s</div>
+            </section>
 
-    function changeLanguage(lang) {
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (translations[lang] && translations[lang][key]) el.textContent = translations[lang][key];
-      });
-      document.body.style.direction = (lang === 'ar' || lang === 'pa') ? 'rtl' : 'ltr';
-    }
-  </script>
+            <section class="status-card">
+                <div class="status-label" id="lbl-battery">배터리</div>
+                <div class="status-value">92 %</div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- 16개 언어 데이터 스크립트 -->
+    <script>
+        const translations = {
+            ko: {
+                title: "HK NEXUS 시스템 대시보드",
+                radarTitle: "타겟 레이더 스코프",
+                radarFooter: "추적 ID: HK-NEXUS-01",
+                lblStatus: "시스템 상태",
+                valStatus: "ACTIVE",
+                lblSpeed: "운행 속도",
+                lblBattery: "배터리",
+                userMenu: "관리자 (Admin)"
+            },
+            en: {
+                title: "HK NEXUS System Dashboard",
+                radarTitle: "Target Radar Scope",
+                radarFooter: "Tracking ID: HK-NEXUS-01",
+                lblStatus: "System Status",
+                valStatus: "ACTIVE",
+                lblSpeed: "Operating Speed",
+                lblBattery: "Battery",
+                userMenu: "Admin"
+            },
+            zh: {
+                title: "HK NEXUS 系统仪表板",
+                radarTitle: "目标雷达显示器",
+                radarFooter: "追踪 ID: HK-NEXUS-01",
+                lblStatus: "系统状态",
+                valStatus: "ACTIVE",
+                lblSpeed: "运行速度",
+                lblBattery: "电量",
+                userMenu: "管理员 (Admin)"
+            },
+            ar: {
+                title: "لوحة تحكم نظام HK NEXUS",
+                radarTitle: "نطاق رادار الهدف",
+                radarFooter: "معرف التتبع: HK-NEXUS-01",
+                lblStatus: "حالة النظام",
+                valStatus: "نشط",
+                lblSpeed: "سرعة التشغيل",
+                lblBattery: "البطارية",
+                userMenu: "المسؤول"
+            },
+            hi: {
+                title: "HK NEXUS सिस्टम डैशबोर्ड",
+                radarTitle: "लक्ष्य राडार स्कोप",
+                radarFooter: "ट्रैकिंग आईडी: HK-NEXUS-01",
+                lblStatus: "सिस्टम की स्थिति",
+                valStatus: "सक्रिय (ACTIVE)",
+                lblSpeed: "ऑपरेटिंग गति",
+                lblBattery: "बैटरी",
+                userMenu: "प्रशासक (Admin)"
+            },
+            es: {
+                title: "Panel de Control HK NEXUS",
+                radarTitle: "Alcance del Radar de Objetivo",
+                radarFooter: "ID de Rastreo: HK-NEXUS-01",
+                lblStatus: "Estado del Sistema",
+                valStatus: "ACTIVO",
+                lblSpeed: "Velocidad de Operación",
+                lblBattery: "Batería",
+                userMenu: "Admin"
+            },
+            pt_br: {
+                title: "Painel do Sistema HK NEXUS",
+                radarTitle: "Alcance do Radar do Alvo",
+                radarFooter: "ID de Rastreamento: HK-NEXUS-01",
+                lblStatus: "Status do Sistema",
+                valStatus: "ATIVO",
+                lblSpeed: "Velocidade de Operação",
+                lblBattery: "Bateria",
+                userMenu: "Admin"
+            },
+            uk: {
+                title: "Панель управління HK NEXUS",
+                radarTitle: "Радар цілі",
+                radarFooter: "ID відстеження: HK-NEXUS-01",
+                lblStatus: "Статус системи",
+                valStatus: "АКТИВНИЙ",
+                lblSpeed: "Швидкість роботи",
+                lblBattery: "Акумулятор",
+                userMenu: "Адмін"
+            },
+            ja: {
+                title: "HK NEXUS システムダッシュボード",
+                radarTitle: "ターゲットレーダースコープ",
+                radarFooter: "追跡 ID: HK-NEXUS-01",
+                lblStatus: "システムステータス",
+                valStatus: "ACTIVE",
+                lblSpeed: "走行速度",
+                lblBattery: "バッテリー",
+                userMenu: "管理者 (Admin)"
+            },
+            ru: {
+                title: "Панель управления HK NEXUS",
+                radarTitle: "Радар цели",
+                radarFooter: "ID отслеживания: HK-NEXUS-01",
+                lblStatus: "Состояние системы",
+                valStatus: "АКТИВЕН",
+                lblSpeed: "Скорость работы",
+                lblBattery: "Батарея",
+                userMenu: "Админ"
+            },
+            vi: {
+                title: "Bảng điều khiển hệ thống HK NEXUS",
+                radarTitle: "Phạm vi rada mục tiêu",
+                radarFooter: "Mã theo dõi: HK-NEXUS-01",
+                lblStatus: "Trạng thái hệ thống",
+                valStatus: "HOẠT ĐỘNG",
+                lblSpeed: "Tốc độ vận hành",
+                lblBattery: "Pin",
+                userMenu: "Quản trị viên"
+            },
+            th: {
+                title: "แผงควบคุมระบบ HK NEXUS",
+                radarTitle: "ขอบเขตเรดาร์เป้าหมาย",
+                radarFooter: "รหัสติดตาม: HK-NEXUS-01",
+                lblStatus: "สถานะระบบ",
+                valStatus: "ใช้งานอยู่ (ACTIVE)",
+                lblSpeed: "ความเร็วการทำงาน",
+                lblBattery: "แบตเตอรี่",
+                userMenu: "ผู้ดูแลระบบ (Admin)"
+            },
+            id: {
+                title: "Dasbor Sistem HK NEXUS",
+                radarTitle: "Cakupan Radar Target",
+                radarFooter: "ID Pelacakan: HK-NEXUS-01",
+                lblStatus: "Status Sistem",
+                valStatus: "AKTIF",
+                lblSpeed: "Kecepatan Operasional",
+                lblBattery: "Baterai",
+                userMenu: "Admin"
+            },
+            ar_ps: {
+                title: "لوحة تحكم نظام HK NEXUS",
+                radarTitle: "نطاق رادار الهدف",
+                radarFooter: "رمز التتبع: HK-NEXUS-01",
+                lblStatus: "حالة النظام",
+                valStatus: "نشط",
+                lblSpeed: "سرعة التشغيل",
+                lblBattery: "البطارية",
+                userMenu: "المسؤول"
+            },
+            de: {
+                title: "HK NEXUS System-Dashboard",
+                radarTitle: "Ziel-Radarbereich",
+                radarFooter: "Tracking-ID: HK-NEXUS-01",
+                lblStatus: "Systemstatus",
+                valStatus: "AKTIV",
+                lblSpeed: "Betriebsgeschwindigkeit",
+                lblBattery: "Batterie",
+                userMenu: "Admin"
+            },
+            it: {
+                title: "Dashboard del Sistema HK NEXUS",
+                radarTitle: "Portata Radar Obiettivo",
+                radarFooter: "ID Tracciamento: HK-NEXUS-01",
+                lblStatus: "Stato del Sistema",
+                valStatus: "ATTIVO",
+                lblSpeed: "Velocità di Esercizio",
+                lblBattery: "Batteria",
+                userMenu: "Admin"
+            },
+            fr: {
+                title: "Tableau de Bord HK NEXUS",
+                radarTitle: "Portée du Radar Cible",
+                radarFooter: "ID de Suivi: HK-NEXUS-01",
+                lblStatus: "État du Système",
+                valStatus: "ACTIF",
+                lblSpeed: "Vitesse de Fonctionnement",
+                lblBattery: "Batterie",
+                userMenu: "Admin"
+            }
+        };
+
+        function changeLanguage(lang) {
+            const t = translations[lang];
+            if (!t) return;
+
+            document.getElementById('doc-title').innerText = t.title;
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('radar-title').innerText = t.radarTitle;
+            document.getElementById('radar-footer').innerText = t.radarFooter;
+            document.getElementById('lbl-status').innerText = t.lblStatus;
+            document.getElementById('val-status').innerText = t.valStatus;
+            document.getElementById('lbl-speed').innerText = t.lblSpeed;
+            document.getElementById('lbl-battery').innerText = t.lblBattery;
+            document.getElementById('user-menu').innerText = t.userMenu;
+        }
+    </script>
 </body>
 </html>
