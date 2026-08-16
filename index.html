@@ -1,95 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>HK Glass OS | Global Control</title>
+  <title>HK Glass OS | Elite HUD</title>
   <style>
-    body { background: #000; color: #38bdf8; margin: 0; font-family: 'Courier New', monospace; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-    .hud-layer { flex: 1; padding: 20px; position: relative; background: radial-gradient(circle at center, rgba(0, 50, 80, 0.2), #000); }
-    
-    .status-bar { display: flex; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid #1e3a8a; }
-    
-    .lang-container { position: absolute; top: 60px; right: 20px; }
-    select { background: #000; color: #38bdf8; border: 1px solid #38bdf8; padding: 5px; cursor: pointer; }
+    :root { --primary: #38bdf8; --bg: #050a14; --glass: rgba(255, 255, 255, 0.05); }
+    body { background: var(--bg); color: #fff; margin: 0; font-family: 'Inter', -apple-system, sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-    .control-center { background: rgba(15, 23, 42, 0.8); padding: 15px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; border-top: 2px solid #1e3a8a; }
-    .btn { border: 1px solid #38bdf8; color: #38bdf8; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; }
+    /* 글래스 모피즘 헤더 */
+    .header { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(56, 189, 248, 0.2); }
+    .title { font-size: 20px; font-weight: 800; letter-spacing: 2px; color: var(--primary); text-transform: uppercase; }
+
+    /* 고급 언어 선택창 */
+    .lang-select { background: rgba(0,0,0,0.6); border: 1px solid var(--primary); color: #fff; padding: 8px 15px; border-radius: 20px; outline: none; cursor: pointer; }
+
+    /* 메인 HUD 영역 */
+    .hud-main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+    
+    /* 중앙 포커스 포인트 */
+    .focus-ring { width: 150px; height: 150px; border: 2px solid var(--primary); border-radius: 50%; position: relative; animation: pulse 3s infinite; }
+    .focus-ring::after { content: ''; position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 50%; }
+
+    /* 데이터 대시보드 */
+    .data-card { margin-top: 40px; background: var(--glass); backdrop-filter: blur(10px); padding: 20px 40px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
+    
+    /* 하단 버튼 바 */
+    .nav-bar { padding: 30px; display: flex; justify-content: center; gap: 20px; }
+    .btn { background: var(--glass); border: 1px solid var(--primary); color: var(--primary); padding: 12px 30px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: 600; }
+    .btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 20px var(--primary); }
+
+    @keyframes pulse { 0% { transform: scale(0.9); opacity: 0.6; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.9); opacity: 0.6; } }
   </style>
 </head>
 <body>
 
-<div class="hud-layer">
-  <div class="status-bar">
-    <span id="label-title">HK-GLASS OS</span>
-    <span id="label-link">SAT: ACTIVE</span>
-  </div>
+<div class="header">
+  <div class="title" id="txt-title">HK GLASS OS</div>
+  <select class="lang-select" onchange="updateUI(this.value)">
+    <option value="ko">🇰🇷 한국어</option>
+    <option value="en">🇺🇸 English</option>
+    <option value="zh">🇨🇳 中文</option>
+    <option value="ar">🇸🇦 العربية</option>
+    <option value="hi">🇮🇳 हिन्दी</option>
+    <option value="es">🇪🇸 Español</option>
+    <option value="pt">🇧🇷 Português</option>
+    <option value="uk">🇺🇦 Українська</option>
+    <option value="ja">🇯🇵 日本語</option>
+    <option value="ru">🇷🇺 Русский</option>
+    <option value="vi">🇻🇳 Tiếng Việt</option>
+    <option value="th">🇹🇭 ภาษาไทย</option>
+    <option value="id">🇮🇩 Indonesia</option>
+    <option value="ps">🇵🇸 فلسطين</option>
+    <option value="de">🇩🇪 Deutsch</option>
+    <option value="it">🇮🇹 Italiano</option>
+    <option value="fr">🇫🇷 Français</option>
+  </select>
+</div>
 
-  <div class="lang-container">
-    <select onchange="changeLang(this.value)">
-      <option value="en">English</option>
-      <option value="zh">中文</option>
-      <option value="ar">العربية (Arabic)</option>
-      <option value="hi">हिन्दी (Hindi)</option>
-      <option value="es">Español</option>
-      <option value="pt">Português (Brasil)</option>
-      <option value="uk">Українська</option>
-      <option value="ja">日本語</option>
-      <option value="ru">Русский</option>
-      <option value="vi">Tiếng Việt</option>
-      <option value="th">ภาษาไทย</option>
-      <option value="id">Bahasa Indonesia</option>
-      <option value="ps">فلسطين (Palestinian)</option>
-      <option value="de">Deutsch</option>
-      <option value="it">Italiano</option>
-      <option value="fr">Français</option>
-    </select>
-  </div>
-
-  <div style="margin-top: 100px;">
-    <h2 id="monitor-title">SYSTEM MONITORING</h2>
-    <p>> <span id="robot-text">Robot Status:</span> <span id="robot-status">Online</span></p>
-    <p>> <span id="uam-text">UAM Status:</span> <span id="uam-status">Standby</span></p>
+<div class="hud-main">
+  <div class="focus-ring"></div>
+  <div class="data-card">
+    <h2 id="txt-monitor">SYSTEM READY</h2>
+    <p id="txt-status">Neural Link: Stable</p>
   </div>
 </div>
 
-<div class="control-center">
-  <div class="btn" id="btn-nav">NAV</div>
-  <div class="btn" id="btn-robot">ROBOT</div>
-  <div class="btn" id="btn-call">CALL</div>
-  <div class="btn" id="btn-off">OFF</div>
+<div class="nav-bar">
+  <button class="btn" id="btn-nav">NAVIGATE</button>
+  <button class="btn" id="btn-robot">ROBOT</button>
+  <button class="btn" id="btn-call">CONNECT</button>
 </div>
 
 <script>
-  const i18n = {
-    en: { title: "HK-GLASS OS", link: "SAT: ACTIVE", monitor: "SYSTEM MONITORING", robot: "Robot Status:", uam: "UAM Status:", nav: "NAV", rbt: "ROBOT", call: "CALL", off: "OFF" },
-    zh: { title: "HK-GLASS OS", link: "卫星: 已激活", monitor: "系统监控", robot: "机器人状态:", uam: "UAM 状态:", nav: "导航", rbt: "机器人", call: "呼叫", off: "关机" },
-    ar: { title: "HK-GLASS OS", link: "القمر الصناعي: نشط", monitor: "مراقبة النظام", robot: "حالة الروبوت:", uam: "حالة UAM:", nav: "الملاحة", rbt: "روبوت", call: "اتصال", off: "إيقاف" },
-    hi: { title: "HK-GLASS OS", link: "सैट: सक्रिय", monitor: "सिस्टम मॉनिटरिंग", robot: "रोबोट स्थिति:", uam: "UAM स्थिति:", nav: "नेविगेशन", rbt: "रोबोट", call: "कॉल", off: "बंद" },
-    es: { title: "HK-GLASS OS", link: "SAT: ACTIVO", monitor: "MONITOREO DEL SISTEMA", robot: "Estado del Robot:", uam: "Estado UAM:", nav: "NAV", rbt: "ROBOT", call: "LLAMAR", off: "APAGAR" },
-    pt: { title: "HK-GLASS OS", link: "SAT: ATIVO", monitor: "MONITORAMENTO DO SISTEMA", robot: "Status do Robô:", uam: "Status UAM:", nav: "NAVEGAR", rbt: "ROBÔ", call: "LIGAR", off: "DESLIGAR" },
-    uk: { title: "HK-GLASS OS", link: "САТ: АКТИВНИЙ", monitor: "МОНІТОРИНГ СИСТЕМИ", robot: "Статус робота:", uam: "Статус UAM:", nav: "НАВ", rbt: "РОБОТ", call: "ВИКЛИК", off: "ВИМК" },
-    ja: { title: "HK-GLASS OS", link: "衛星: 有効", monitor: "システム監視", robot: "ロボット状態:", uam: "UAM状態:", nav: "ナビ", rbt: "ロボット", call: "通話", off: "終了" },
-    ru: { title: "HK-GLASS OS", link: "САТ: АКТИВЕН", monitor: "МОНИТОРИНГ СИСТЕМЫ", robot: "Статус робота:", uam: "Статус UAM:", nav: "НАВ", rbt: "РОБОТ", call: "ВЫЗОВ", off: "ВЫКЛ" },
-    vi: { title: "HK-GLASS OS", link: "SAT: HOẠT ĐỘNG", monitor: "GIÁM SÁT HỆ THỐNG", robot: "Trạng thái Robot:", uam: "Trạng thái UAM:", nav: "ĐỊNH VỊ", rbt: "ROBOT", call: "GỌI", off: "TẮT" },
-    th: { title: "HK-GLASS OS", link: "ดาวเทียม: ใช้งานอยู่", monitor: "การตรวจสอบระบบ", robot: "สถานะหุ่นยนต์:", uam: "สถานะ UAM:", nav: "นำทาง", rbt: "หุ่นยนต์", call: "โทร", off: "ปิด" },
-    id: { title: "HK-GLASS OS", link: "SAT: AKTIF", monitor: "PEMANTAUAN SISTEM", robot: "Status Robot:", uam: "Status UAM:", nav: "NAVIGASI", rbt: "ROBOT", call: "PANGGIL", off: "MATIKAN" },
-    ps: { title: "HK-GLASS OS", link: "السات: نشط", monitor: "د سیسټم څارنه", robot: "د روبوټ حالت:", uam: "د UAM حالت:", nav: "نویګیشن", rbt: "روبوټ", call: "کال", off: "بند" },
-    de: { title: "HK-GLASS OS", link: "SAT: AKTIV", monitor: "SYSTEMÜBERWACHUNG", robot: "Roboter-Status:", uam: "UAM-Status:", nav: "NAV", rbt: "ROBOTER", call: "ANRUF", off: "AUS" },
-    it: { title: "HK-GLASS OS", link: "SAT: ATTIVO", monitor: "MONITORAGGIO SISTEMA", robot: "Stato Robot:", uam: "Stato UAM:", nav: "NAV", rbt: "ROBOT", call: "CHIAMA", off: "SPENTO" },
-    fr: { title: "HK-GLASS OS", link: "SAT: ACTIF", monitor: "SURVEILLANCE SYSTÈME", robot: "État Robot:", uam: "État UAM:", nav: "NAV", rbt: "ROBOT", call: "APPELER", off: "ÉTEINDRE" }
+  const data = {
+    ko: { title: "HK 글래스 OS", monitor: "시스템 가동 중", status: "뉴럴 링크: 안정적", nav: "항로 탐색", rbt: "로봇 제어", call: "연결" },
+    en: { title: "HK GLASS OS", monitor: "SYSTEM READY", status: "Neural Link: Stable", nav: "NAVIGATE", rbt: "ROBOT", call: "CONNECT" },
+    zh: { title: "HK 玻璃 OS", monitor: "系统就绪", status: "神经链接: 稳定", nav: "导航", rbt: "机器人", call: "连接" },
+    ar: { title: "HK GLASS OS", monitor: "النظام جاهز", status: "الرابط العصبي: مستقر", nav: "الملاحة", rbt: "روبوت", call: "اتصال" },
+    hi: { title: "HK GLASS OS", monitor: "सिस्टम तैयार", status: "न्यूरल लिंक: स्थिर", nav: "नेविगेट", rbt: "रोबोट", call: "कनेक्ट" },
+    es: { title: "HK GLASS OS", monitor: "SISTEMA LISTO", status: "Enlace Neural: Estable", nav: "NAVEGAR", rbt: "ROBOT", call: "CONECTAR" },
+    pt: { title: "HK GLASS OS", monitor: "SISTEMA PRONTO", status: "Link Neural: Estável", nav: "NAVEGAR", rbt: "ROBÔ", call: "CONECTAR" },
+    uk: { title: "HK GLASS OS", monitor: "СИСТЕМА ГОТОВА", status: "Нейронний зв'язок: Стабільний", nav: "НАВІГАЦІЯ", rbt: "РОБОТ", call: "ПІДКЛЮЧИТИ" },
+    ja: { title: "HK ガラス OS", monitor: "システム準備完了", status: "ニューラルリンク: 安定", nav: "ナビ", rbt: "ロボット", call: "接続" },
+    ru: { title: "HK GLASS OS", monitor: "СИСТЕМА ГОТОВА", status: "Нейросеть: Стабильна", nav: "НАВИГАЦИЯ", rbt: "РОБОТ", call: "ПОДКЛЮЧИТЬ" },
+    vi: { title: "HK GLASS OS", monitor: "HỆ THỐNG SẴN SÀNG", status: "Liên kết thần kinh: Ổn định", nav: "ĐỊNH VỊ", rbt: "ROBOT", call: "KẾT NỐI" },
+    th: { title: "HK GLASS OS", monitor: "ระบบพร้อม", status: "การเชื่อมต่อทางประสาท: เสถียร", nav: "นำทาง", rbt: "หุ่นยนต์", call: "เชื่อมต่อ" },
+    id: { title: "HK GLASS OS", monitor: "SISTEM SIAP", status: "Link Neural: Stabil", nav: "NAVIGASI", rbt: "ROBOT", call: "KONEKSI" },
+    ps: { title: "HK GLASS OS", monitor: "سیسټم چمتو دی", status: "عصبي لینک: ثابت", nav: "نویګیشن", rbt: "روبوټ", call: "وصلول" },
+    de: { title: "HK GLASS OS", monitor: "SYSTEM BEREIT", status: "Neuronale Verbindung: Stabil", nav: "NAVIGIEREN", rbt: "ROBOTER", call: "VERBINDEN" },
+    it: { title: "HK GLASS OS", monitor: "SISTEMA PRONTO", status: "Link Neurale: Stabile", nav: "NAVIGAZIONE", rbt: "ROBOT", call: "CONNETTI" },
+    fr: { title: "HK GLASS OS", monitor: "SYSTÈME PRÊT", status: "Lien Neuronal: Stable", nav: "NAVIGUER", rbt: "ROBOT", call: "CONNECTER" }
   };
 
-  function changeLang(lang) {
-    const d = i18n[lang];
-    document.getElementById('label-title').innerText = d.title;
-    document.getElementById('label-link').innerText = d.link;
-    document.getElementById('monitor-title').innerText = d.monitor;
-    document.getElementById('robot-text').innerText = d.robot;
-    document.getElementById('uam-text').innerText = d.uam;
+  function updateUI(lang) {
+    const d = data[lang];
+    document.getElementById('txt-title').innerText = d.title;
+    document.getElementById('txt-monitor').innerText = d.monitor;
+    document.getElementById('txt-status').innerText = d.status;
     document.getElementById('btn-nav').innerText = d.nav;
     document.getElementById('btn-robot').innerText = d.rbt;
     document.getElementById('btn-call').innerText = d.call;
-    document.getElementById('btn-off').innerText = d.off;
   }
 </script>
 </body>
