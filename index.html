@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HK WorldBank</title>
+  <title>HK-NEXUS</title>
   
   <!-- PWA & Web App Setup -->
   <link rel="manifest" href="manifest.json">
@@ -48,6 +48,7 @@
       font-size: 1.8rem;
       font-weight: bold;
       color: #58a6ff;
+      letter-spacing: 1px;
     }
 
     .lang-select {
@@ -126,9 +127,9 @@
   <!-- 전체 화면 부모 컨테이너 -->
   <div class="container">
 
-    <!-- 상단 영역: 브랜딩 및 16개국 다국어 선택기 -->
+    <!-- 상단 영역: 브랜딩(HK-NEXUS) 및 16개국 다국어 선택기 -->
     <header class="header">
-      <div class="brand-title">HK WorldBank</div>
+      <div class="brand-title">HK-NEXUS</div>
       <select class="lang-select" id="langSelector" onchange="changeLanguage(this.value)">
         <option value="ko" selected>한국어 (KR)</option>
         <option value="en">English (US)</option>
@@ -152,12 +153,12 @@
     <!-- 중앙 영역: 대시보드 카드 -->
     <main class="main-content">
       <div class="card">
-        <div class="card-title" id="txt-asset-label">총 자산 (Total Balance)</div>
+        <div class="card-title" id="txt-asset-label">총 자산</div>
         <div class="card-value" id="txt-asset-val">0.00 Pi</div>
       </div>
 
       <div class="card">
-        <div class="card-title" id="txt-status-label">노드 상태 (Node Status)</div>
+        <div class="card-title" id="txt-status-label">노드 상태</div>
         <div class="card-value" style="color: #3fb950;" id="txt-status-val">● Active</div>
       </div>
     </main>
@@ -165,7 +166,7 @@
     <!-- 하단 영역: 지갑 연결 버튼 -->
     <footer class="footer">
       <button class="btn-primary" id="btn-action" onclick="handleAction()">
-        지갑 연결 (Connect Wallet)
+        지갑 연결
       </button>
     </footer>
 
